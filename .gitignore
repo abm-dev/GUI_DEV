@@ -41,3 +41,11 @@ $RECYCLE.BIN/
 Network Trash Folder
 Temporary Items
 .apdisk
+
+#local stuff that should not be uploaded each time
+exp000/
+#Bash_scripts/
+#Data_Analysis_GUI_Serial/
+nbproject/
+EuraceUnibi_Model_1.0/
+#

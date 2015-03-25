@@ -1,0 +1,240 @@
+
+R version 2.11.1 (2010-05-31)
+Copyright (C) 2010 The R Foundation for Statistical Computing
+ISBN 3-900051-07-0
+
+R is free software and comes with ABSOLUTELY NO WARRANTY.
+You are welcome to redistribute it under certain conditions.
+Type 'license()' or 'licence()' for distribution details.
+
+  Natural language support but running in an English locale
+
+R is a collaborative project with many contributors.
+Type 'contributors()' for more information and
+'citation()' on how to cite R or R packages in publications.
+
+Type 'demo()' for some demos, 'help()' for on-line help, or
+'help.start()' for an HTML browser interface to help.
+Type 'q()' to quit R.
+
+> delete.all<-function()
++ rm(list=ls(pos=.GlobalEnv),pos=.GlobalEnv)
+> delete.all()
+> 
+> graphics.off()
+> 
+> serial<- system('echo $SERIAL', intern=TRUE)
+> print(paste("SERIAL: ",serial))
+[1] "SERIAL:  0"
+> 
+> # Start the configure script. 
+> #source("/home/sgemkow/Desktop/Data_Analysis_GUI_Serial/Configure.r")
+> source(paste(system('echo $PATH_R_SCRIPTS', intern=TRUE),"/Configure.r",sep=""))
+Loading required package: DBI
+Loading required package: spam
+Package 'spam' is loaded. Spam version 0.23-0 (2010-09-01).
+Type demo( spam) for some demos, help( Spam) for an overview
+of this package.
+Help for individual functions is optained by adding the
+suffix '.spam' to the function name, e.g. 'help(chol.spam)'.
+
+Attaching package: 'spam'
+
+The following object(s) are masked from 'package:base':
+
+    backsolve, forwardsolve, norm
+
+ Use help(fields) for an overview of this library
+
+library( fields, keep.source=TRUE) retains comments in the source code. 
+[1] "Number xml files:  250"
+[1] "Boxplot_iteration_vector: "
+[1]  50 150 250
+[1] "Histogram_iteration_vector: "
+[1] 150 250
+> 
+> # Create folders for plots.
+> #source(paste(root_directory,"Folder_creation/Setup_Folders.r",sep=""))
+> 
+> # Run settings.
+> source(paste(root_directory,"Settings.r",sep=""))
+> 
+> if(serial == 1)
++ {
++ 	data<-as.matrix(read.csv(paste(data_file_directory,"variables.txt",sep=""),header=TRUE,sep=""))	
++ 	for(v in 1:length(data[,1]))
++ 	{	
++ 		# Get variable name.
++ 		variable <- data[v,1]
++ 		
++ 		print("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$ ")
++ 		print(paste("Run Serial Get_Data: ",variable,sep=""))
++ 
++ 		# Name of the variable in R memory.
++ 		new_name <- data[v,2]
++ 	
++ 		# Get agent type.
++ 		agent <- data[v,3]
++ 
++ 		# Evaluates the number of the agent type. 
++ 		agent_number<-eval(parse(text=eval(agent)))
++ 
++ 		# Sum or Mean over agents in one iteration.
++ 		method<-data[v,4]
++ 
++ 		# Name of the filter variable
++ 		filter_1<-data[v,5]
++ 
++ 		# Value of the filter variable
++ 		filter_1_value<-data[v,6]
++ 
++ 		# Comparison operator
++ 		operator_1<-data[v,7]
++ 
++ 		# Name of the filter variable
++ 		filter_2<-data[v,8]
++ 
++ 		# Value of the filter variable
++ 		filter_2_value<-data[v,9]
++ 
++ 		# Comparison operator
++ 		operator_2<-data[v,10]
++ 
++ 		# Weight
++ 		weight<-data[v,11]
++ 
++ 		# Real data
++ 		real<-data[v,12]
++ 
++ 		# Start getting and processing data.
++ 		source(paste(root_directory,"Get_Data.r",sep=""))
++ 	}
++ }else
++ {
++ 
++ 	data<-as.matrix(read.csv(paste(data_file_directory,"variables.txt",sep=""),header=TRUE,sep=""))	
++ 
++ 	# Get variable name.
++ 	variable <- system('echo $var', intern=TRUE)
++ 
++ 	# Name of the variable in R memory.
++ 	new_name <- system('echo $name', intern=TRUE)#system('echo $name', intern=TRUE)
++ 	
++ 	# Get agent type.
++ 	agent <- system('echo $agent', intern=TRUE)
++ 
++ 	# Evaluates the number of the agent type. 
++ 	agent_number<-eval(parse(text=eval(agent)))
++ 
++ 	# Sum or Mean over agents in one iteration.
++ 	method<-system('echo $method', intern=TRUE)
++ 
++ 	# Name of the filter variable
++ 	filter_1<-system('echo $filter', intern=TRUE)
++ 
++ 	# Value of the filter variable
++ 	filter_1_value<-system('echo $filter_value', intern=TRUE)
++ 
++ 	# Comparison operator
++ 	operator_1<-system('echo $operator', intern=TRUE)
++ 
++ 	# Name of the filter variable
++ 	filter_2<-system('echo $filter_2', intern=TRUE)
++ 
++ 	# Value of the filter variable
++ 	filter_2_value<-system('echo $filter_2_value', intern=TRUE)
++ 
++ 	# Comparison operator
++ 	operator_2<-system('echo $operator_2', intern=TRUE)
++ 
++ 	# Weight
++ 	weight<-system('echo $weight', intern=TRUE)
++ 
++ 	# Real data
++ 	real<-system('echo $real', intern=TRUE)
++ 	
++ 	print("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$ ")
++ 	print(paste("Run Parallel Get_Data: ",variable,sep=""))
++ 
++ 	# Start getting and processing data.
++ 	source(paste(root_directory,"Get_Data.r",sep=""))
++ 
++ }
+[1] "$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$ "
+[1] "Run Parallel Get_Data: no_employees"
+[1] "Parameter: 0"
+[1] "RUN: 1"
+[1] " Get Data -> no raw data"
+[1] "   Get Filter:  active"
+[1] "     Get Filter Data -> no raw data"
+[1] "     Save raw data filter:  active"
+[1] "RUN: 2"
+[1] " Get Data -> no raw data"
+[1] "   Get Filter:  active"
+[1] "     Get Filter Data -> no raw data"
+[1] "     Save raw data filter:  active"
+[1] "Parameter: 20"
+[1] "RUN: 1"
+[1] " Get Data -> no raw data"
+[1] "   Get Filter:  active"
+[1] "     Get Filter Data -> no raw data"
+[1] "     Save raw data filter:  active"
+[1] "RUN: 2"
+[1] " Get Data -> no raw data"
+[1] "   Get Filter:  active"
+[1] "     Get Filter Data -> no raw data"
+[1] "     Save raw data filter:  active"
+Warning message:
+In as.vector(data) : NAs introduced by coercion
+> 
+> # Start plotting.
+> source(paste(root_directory,"Plot_Head.r",sep=""))
+[1] " "
+[1] "Plot time series"
+[1] "employees"
+[1] " "
+[1] "Plot ratios"
+[1] "employees"
+[1] "Get_Sub_Data: Process Variable: employees  Sub Variable: output"
+[1] "Parameter: 0"
+[1] "RUN: 1"
+[1] "   Get Filter:  active"
+[1] "     Get Filter Data -> raw data already there"
+[1] "RUN: 2"
+[1] "   Get Filter:  active"
+[1] "     Get Filter Data -> raw data already there"
+[1] "Parameter: 20"
+[1] "RUN: 1"
+[1] "   Get Filter:  active"
+[1] "     Get Filter Data -> raw data already there"
+[1] "RUN: 2"
+[1] "   Get Filter:  active"
+[1] "     Get Filter Data -> raw data already there"
+[1] "Get_Sub_Data: Process Variable: employees  Sub Variable: output"
+[1] "Parameter: 0"
+[1] "RUN: 1"
+[1] "   Get Filter:  active"
+[1] "     Get Filter Data -> raw data already there"
+[1] "RUN: 2"
+[1] "   Get Filter:  active"
+[1] "     Get Filter Data -> raw data already there"
+[1] "Parameter: 20"
+[1] "RUN: 1"
+[1] "   Get Filter:  active"
+[1] "     Get Filter Data -> raw data already there"
+[1] "RUN: 2"
+[1] "   Get Filter:  active"
+[1] "     Get Filter Data -> raw data already there"
+Warning messages:
+1: In as.vector(data) : NAs introduced by coercion
+2: In as.vector(data) : NAs introduced by coercion
+3: In as.vector(data) : NAs introduced by coercion
+4: In as.vector(data) : NAs introduced by coercion
+5: In as.vector(data) : NAs introduced by coercion
+6: In as.vector(data) : NAs introduced by coercion
+7: In as.vector(data) : NAs introduced by coercion
+8: In as.vector(data) : NAs introduced by coercion
+> 
+> 
+> 
+> 
