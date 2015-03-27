@@ -1,5 +1,0 @@
-output
-output
-earnings
-markup
-capital_stock
