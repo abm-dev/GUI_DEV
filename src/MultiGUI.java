@@ -2160,8 +2160,7 @@ public class MultiGUI extends JFrame{
                                                 
                                                 ShellTemplateUpdater updater=new ShellTemplateUpdater(dict);
                                                 updater.update("template_files/launch_template.sh", "launch.sh");
-                                                System.out.println("after updating");
-
+                                                
 			    			/*
 			    			writeGeneralSettingsToFile launchSH = new  writeGeneralSettingsToFile(PathToFile,true);
 			    			
@@ -2176,7 +2175,60 @@ public class MultiGUI extends JFrame{
                                                 */
                                                 
 			    			/*Choice is yes*/
-			    			PathToFile = new String(SimulationSettings.WORKING_DIRECTORY+"/run_exp.sh");
+			    			
+                                                dict.put("<SimulationSettings.ZERO_XML_FILE>",
+                                                        SimulationSettings.ZERO_XML_FILE.replaceAll("\\\\","\\\\\\\\"));
+                                                dict.put("<SimulationSettings.numIterations>",
+                                                        SimulationSettings.numIterations+"");
+                                                dict.put("<SimulationSettings.numProcessors>",
+                                                        SimulationSettings.numProcessors+"");
+                                                
+                                                //If one parameters is selected:
+                                                if(settingContainer.parameterVariationOnePars.isSelected())			    				
+			    			    dict.put("<NUM_PARS>","1");
+                                                else 
+                                                    dict.put("<NUM_PARS>","0");                                                                
+                                                
+                                                
+                                                       
+                                                dict.put("<SimulationSettings.numBatchRuns>",
+                                                        SimulationSettings.numBatchRuns+"");
+                                                dict.put("<SimulationSettings.MAIN_EXECUTABLE>",
+                                                        SimulationSettings.MAIN_EXECUTABLE.replaceAll("\\\\","\\\\\\\\"));                                                
+			    			
+                                                if(SimulationSettings.saveAllAgentVariables)
+                                                    dict.put("<MODEL_XML_FILE>",
+                                                        SimulationSettings.EURACE_MODEL_XML.replaceAll("\\\\","\\\\\\\\"));
+                                                else
+                                                    dict.put("<MODEL_XML_FILE>",
+                                                        (SimulationSettings.WORKING_DIRECTORY+"/shadow_model.xml'").replaceAll("\\\\","\\\\\\\\"));
+                                                
+                                                dict.put("<SimulationSettings.PATH_TO_RSCRIPTS>",
+                                                        (SimulationSettings.PATH_TO_RSCRIPTS+"/").replaceAll("\\\\","\\\\\\\\"));                                                
+			    			dict.put("<SimulationSettings.DO_RUN>",
+                                                        SimulationSettings.DO_RUN+"");
+                                                dict.put("<SimulationSettings.DO_COMPRESS_KEEP_ORIGINAL>",
+                                                        SimulationSettings.DO_COMPRESS_KEEP_ORIGINAL+"");
+                                                dict.put("<SimulationSettings.DO_COMPRESS_REMOVE_ORIGINAL>",
+                                                        SimulationSettings.DO_COMPRESS_REMOVE_ORIGINAL+"");
+                                                dict.put("<SimulationSettings.DO_DECOMPRESS>",
+                                                        SimulationSettings.DO_DECOMPRESS+"");
+                                                dict.put("<SimulationSettings.DO_REMOVE_DB>",
+                                                        SimulationSettings.DO_REMOVE_DB+"");
+                                                
+                                                
+                                                if(plottingContainer.singleRunAnalyisCheckBox.isSelected() || plottingContainer.batchRunAnalyisCheckBox.isSelected() || plottingContainer.parameterAnalyisCheckBox.isSelected())
+                                                    dict.put("<RUN_R_SCRIPTS>","bash ./r_serial.sh");
+                                                else
+                                                    dict.put("<RUN_R_SCRIPTS>","#Don't run r scripts\\n#bash ./r_serial.sh");
+                                                
+                                                updater.update("template_files/run_exp_template.sh", "run_exp.sh");
+                                                
+                                                
+                                                
+                                                writeGeneralSettingsToFile expSettingsSHFile = new  writeGeneralSettingsToFile(PathToFile,true);			    			
+                                                /*
+                                                PathToFile = new String(SimulationSettings.WORKING_DIRECTORY+"/run_exp.sh");
 			    			
 			    			System.out.println(SimulationSettings.WORKING_DIRECTORY);
 			    			System.out.println(PathToFile);
@@ -2330,7 +2382,7 @@ public class MultiGUI extends JFrame{
 			    			System.out.println(PathToFile);
 			    			
 			    			
-			    			
+			    			*/
 			    		    
 			    			writeGeneralSettingsToFile setExpSHFile = new  writeGeneralSettingsToFile(SimulationSettings.WORKING_DIRECTORY+"/set_exp.sh", true);
 			    			

@@ -19,7 +19,7 @@ public class ShellTemplateUpdater {
     public void update(String templateRelativePath, String outputRelativePath) {
 //         || templateRelativePath == null || outputRelativePath == null) {
         if (replacementDictionary == null) {
-            throw new IllegalStateException();
+            throw new IllegalArgumentException();
         }        
         InputStream in;
         PrintStream out;
@@ -30,11 +30,8 @@ public class ShellTemplateUpdater {
             while (sc.hasNext()) {
                 String row = sc.next();
                 for (Map.Entry<String, String> entry : replacementDictionary.entrySet()) {
-                    //row=row.replaceAll(entry.getKey(), "qqqq");
                     row = row.replaceAll(entry.getKey(), entry.getValue());  
-                            //row.replaceAll(entry.getKey(), entry.getValue());                    
                 }
-                System.out.println(row);
                 out.println(row);                
             }
             in.close();
