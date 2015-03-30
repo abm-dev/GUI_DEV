@@ -2226,7 +2226,7 @@ public class MultiGUI extends JFrame{
                                                 
                                                 
                                                 
-                                                writeGeneralSettingsToFile expSettingsSHFile = new  writeGeneralSettingsToFile(PathToFile,true);			    			
+                                                //writeGeneralSettingsToFile expSettingsSHFile = new  writeGeneralSettingsToFile(PathToFile,true);			    			
                                                 /*
                                                 PathToFile = new String(SimulationSettings.WORKING_DIRECTORY+"/run_exp.sh");
 			    			
@@ -2384,6 +2384,49 @@ public class MultiGUI extends JFrame{
 			    			
 			    			*/
 			    		    
+                                                
+                                                
+                                                String experimentSettings="";
+                                                if(settingContainer.parameterVariationOnePars.isSelected()){
+                                                    //If one parameters is selected:	
+                                                    //Check if settings are correct, otherwise return warning message/
+                                                    try{
+                                                        SimulationSettings.PARAMETER_1.name.equals(null);			    			
+				    					
+                                                        SimulationSettings.PARAMETER_1.values.get(0);
+				    					
+				    					
+                                                        experimentSettings+="\nexport PARAMETER_1='"+SimulationSettings.PARAMETER_1.name+"'";
+					    				
+					    				
+                                                        String values1 ="";
+					    				
+					    				
+                                                        for(int i=0; i<SimulationSettings.PARAMETER_1.values.size();i++ ){			
+                                                            values1 = values1+" "+SimulationSettings.PARAMETER_1.values.get(i).value;
+                                                        }
+                                                        experimentSettings+="\nexport F1_values='"+values1+"'"
+                                                                +"\n"
+					    			+"export F1_values_b=("+ values1+")"
+                                                                +"\n"
+                                                                +"for i in ${!F1_values_b[*]};do export F1_values_b_$i='${F1_values_b[$i]}';done";
+			    				}catch(Exception e){
+			    					JOptionPane.showMessageDialog(null,"Parameter 1 is not selected!");
+			    				}
+			    		
+			    			}else
+			    			{
+			    				//If no parameters are selected:
+			    				experimentSettings="# No parameters selected";
+			    			}
+                                                dict.put("<ExperimentSettings>",
+                                                        (experimentSettings).replaceAll("\\\\","\\\\\\\\"));                                                
+			    			
+                                                updater.update("template_files/set_exp_template.sh", SimulationSettings.WORKING_DIRECTORY+"/set_exp.sh");
+                                                
+                                                /*
+                                                
+                                                
 			    			writeGeneralSettingsToFile setExpSHFile = new  writeGeneralSettingsToFile(SimulationSettings.WORKING_DIRECTORY+"/set_exp.sh", true);
 			    			
 			    			setExpSHFile.writeToFile("####################################################");
@@ -2398,7 +2441,7 @@ public class MultiGUI extends JFrame{
 			    				
 			    				//If one parameters is selected:
 			    				
-			    				/*Check if settings are correct, otherwise return warning message*/
+			    				//Check if settings are correct, otherwise return warning message/
 			    
 			    				try{
 			    					
@@ -2435,6 +2478,7 @@ public class MultiGUI extends JFrame{
 			    				setExpSHFile.writeToFile("# No parameters selected");
 
 			    			}
+                                                */
 			    			
 
 			    			WriteOutputXMLFile outputXML = new WriteOutputXMLFile(SimulationSettings.WORKING_DIRECTORY);
