@@ -14,6 +14,7 @@ import java.io.InputStreamReader;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.EventListener;
+import java.util.HashMap;
 
 import javax.swing.JButton; 
 import javax.swing.event.ChangeEvent;
@@ -2146,7 +2147,22 @@ public class MultiGUI extends JFrame{
 			    			
 			    			String PathToFile = new String("launch.sh");
 			    			
-			    			
+                                                
+                                                System.out.println("before updating init");
+                                                HashMap<String, String> dict=new HashMap<>();
+                                                
+//                                                String slash="\\";                                                
+                                                dict.put("<SimulationSettings.WORKING_DIRECTORY>",
+                                                        SimulationSettings.WORKING_DIRECTORY.replaceAll("\\\\","\\\\\\\\"));
+//                                                
+                                                System.out.println(SimulationSettings.WORKING_DIRECTORY);
+                                                System.out.println(dict);
+                                                
+                                                ShellTemplateUpdater updater=new ShellTemplateUpdater(dict);
+                                                updater.update("template_files/launch_template.sh", "launch.sh");
+                                                System.out.println("after updating");
+
+			    			/*
 			    			writeGeneralSettingsToFile launchSH = new  writeGeneralSettingsToFile(PathToFile,true);
 			    			
 			    			launchSH.writeToFile("####################################################");
@@ -2157,7 +2173,8 @@ public class MultiGUI extends JFrame{
 			    			launchSH.writeToFile("cd "+SimulationSettings.WORKING_DIRECTORY);
 			    			launchSH.writeToFile("bash run_exp.sh");
 			    			launchSH.writeToFile("\n");
-			    		
+                                                */
+                                                
 			    			/*Choice is yes*/
 			    			PathToFile = new String(SimulationSettings.WORKING_DIRECTORY+"/run_exp.sh");
 			    			
