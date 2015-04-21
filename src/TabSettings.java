@@ -33,7 +33,16 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableColumn;
 
-
+/**
+ * apparently additional class that describes different parts of first page of GUI.
+ * contains radoibuttons, buttonGroups, tables, etc.
+ * 
+ * Cannot really understand, why an instance of this class is used with the name "settingContainer" in the multi gui.
+ * Is it at the same time containing settings and being used as some gui property?
+ * 
+ * Apparently tab settings is a class that is drawing all the subpanels in the first page of the multi gui.
+ * 
+ */
 public class TabSettings extends JPanel{
 	
 	

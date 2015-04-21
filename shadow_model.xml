@@ -1,1 +1,1 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?><xmodel><agents/></xmodel>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><xmodel><agents><xagent><name>Firm</name><memory><variable><name>id</name><type>int</type></variable><variable><name>total_mean_wage</name><type>double</type></variable><variable><name>production_costs</name><type>double</type></variable><variable><name>revenue_per_day</name><type>double</type></variable></memory></xagent></agents></xmodel>

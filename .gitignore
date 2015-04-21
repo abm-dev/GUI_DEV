@@ -54,3 +54,4 @@ manifest.mf
 build.xml
 .class
 /build/
+/dist/

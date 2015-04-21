@@ -48,7 +48,40 @@ import javax.swing.table.TableCellRenderer;
 
 
 
-
+/**
+ * tabPlotting.java determines other tabs of main gui, in particular 
+ * "Plotting Settings" tab.
+ * 
+ * A brief summary of main functional components of this class:
+ * - constructor TabPlotting: launches in turn 3 constructors that 
+ * correspond to tabs (TabSingleTimeSeries,TabMultipleTimeSeries,
+ * TabDistributions ), one constructor JTabbedPane that corresponds to 
+ * container, that contains all those tabs (bar on top where you can 
+ * choos which of three tabs to choose), and finally launches panel2() method, 
+ * which draws a panel where one can choose single\batch\run analysis (used 
+ * later in multigui when building experiment) and some properties related to 
+ * plots.
+ * 
+ * - panel2():  method draws a panel with additional plotting and "run analysis" 
+ * properties. Method contains both explicit drawing methods and also some 
+ * loading of default values from PlottingSettings 
+ *  e.g. if(PlottingSettings.singleRunAnalyis)
+ *          singleRunAnalyisCheckBox.setSelected(true);
+ * which fills checkboxes depending on those values. It is not completely 
+ * clear yet how to take the "reading" part out of this method to be reused in 
+ * the new interface.
+ *  Also communication between PlottingSettings and this pane is done using
+ * explicit listeners that modify the PlottingSettings when the checkBoxes
+ * are checked or unchecked. It is also a bit unclear how to deal with this 
+ * behavior when moving to new, separated gui interface model.
+ * 
+ * Another communication with other parts of gui is done via PlottingSettinngs:
+ *  * if(PlottingSettings.fileTypePlots.equals("pdf"))
+ * 		fileTypePlots.setSelectedIndex(0);
+ * similarly, listeners are modifying the values of PlottingSettings when 
+ * other parts of 
+ * 
+ */
 
 
 

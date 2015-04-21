@@ -3,7 +3,10 @@ import java.util.ArrayList;
 import javax.swing.JCheckBox;
 import javax.swing.table.AbstractTableModel;
 
-
+/**
+ *this is the actual realization of the table appearing in the first page of 
+ * MultiGuI. 
+ */
 public class AgentTableModel extends AbstractTableModel{
 	
 	private ArrayList<Agent>  agentList;

@@ -25,12 +25,46 @@ import javax.swing.table.TableColumn;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
-
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-
+/**
+ * the main GUI for working with experiment. Includes both settings and plotting settings.
+ * Includes all JPanels, JMenuBars, JMenuItems.
+ * 
+ * Comments on constuctor: almost all constructor code is related to describing
+ * menu on the top ("Experiment" and "Settings" submenus). Large part of code
+ * take listeners, and it may be a good idea to separate them. 
+ * 
+ * 
+ * 
+ * important variables:
+ * JscrollPane - one of panes on the right, that can be scrolled.
+ * AgentTableModel - the table with agents on the first gui Page.
+ * it is an extension of AbstractTableModel, therefore it has nothing to do
+ * with standard jTable class, and its implementation is a bit unclear
+ * 
+ * 
+ *JTable table,tableP2  - why two tables? what does tableP2 do?
+ * 
+ * guiContainer - wrapped in globalScrollPane. guiContainer is a jPanel 
+ * containing mainTabPane and buttomArea;
+ * 
+ * mainTabPane - is a JTabbedPane that contains tabs settingScrollPane 
+ * (named Simulation Settings) and plottingScrollPane (named Plotting Settings)
+ * 
+ * settingScrollPane - wraps settingContainer (apparently making it scrollable).
+ * 
+ * TabSettings settingContainer - extension of jPanel that corresponds to 
+ * the tab "Simulation Settings". it should contain mainly gui functionality.
+ * 
+ * SimulationSettings - a class with lots of static variables that correspond 
+ * to data saved in xml file between launches of application. It is also 
+ * extensively used when printing scrips (after build experiment button 
+ * was pressed).
+ * 
+ */
 
 public class MultiGUI extends JFrame{
 	
@@ -69,7 +103,7 @@ public class MultiGUI extends JFrame{
 	
 	
 	
-    ButtonGroup soreAllvariables;
+        ButtonGroup soreAllvariables;
 	private JRadioButton justBatchRuns;
 	
 	private ButtonGroup expSetup;
@@ -120,7 +154,9 @@ public class MultiGUI extends JFrame{
 	/*List of agent names which is read from the eurace model xml file*/
 	ArrayList<String>  agentList ;
 	
-
+        /**
+         * constructor for multi gui, 
+         */
 	
 	public MultiGUI(){
 		
@@ -1539,9 +1575,11 @@ public class MultiGUI extends JFrame{
 	
 
 	
-	
-	
-	
+	/**
+         * this is an inner class of MultiGUI that modifies the state 
+         * of SimulationSettings after the radiobuttons in Settings\database 
+         * compression properties are changed.
+         */	
 	
 	
 	
@@ -1595,7 +1633,20 @@ public class MultiGUI extends JFrame{
 		
 	}
 	
-	
+	/**
+         * a method that is drawing the table that allows to select, which 
+         * agents should be recorded, after which periods and with which phase.
+         * 
+         * Another question is what does settingContainer.drawTableParemters();
+         * do, which is run exactly after drawAgentTable() ? 
+         * 
+         * important variables:
+         * colHeaders: used to define headers of each column of the table/
+         * tabAgentsModel: a global variable of MultiGUI 
+         * 
+         * unclear: what does lcRightPanel do, 
+         * 
+         */
 	
 	
 	void drawAgentTable(){
@@ -1614,7 +1665,7 @@ public class MultiGUI extends JFrame{
 		tabAgentsModel = new AgentTableModel(colHeaders,AgentSettings.agents);
 		DrawStoreOptionTable tabAgents = new DrawStoreOptionTable(tabAgentsModel, colHeaders);
 	    
-	    listScrollAgentTable = new JScrollPane(tabAgents);  
+                listScrollAgentTable = new JScrollPane(tabAgents);  
 		listScrollAgentTable.setPreferredSize(new Dimension(280, 179)); 
 		settingContainer.g.gridx = 0;
 		settingContainer.g.gridy= 0;
@@ -1679,6 +1730,16 @@ public class MultiGUI extends JFrame{
 	}
 	
 	/*This class loads the settings from the settings.xml files*/
+        
+        /**
+         * This method is run at the beginning of constructor of MultiGUI.
+         * it is still not clear if the only place where the program is saving 
+         * settings are fields of 'SimulationSettings' variable, or not.
+         * 
+         * is this method modifying anything else?
+         * 
+         * 
+         */
 	void LoadSettings(String file){
 
 		/*Return a warning message if the eurace model xml file is not there*/

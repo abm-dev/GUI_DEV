@@ -71,7 +71,7 @@ CentralBank = 1
 ClearingHouse = 1
 ########################################Input-Section: Settings for Analysis #########################################################
 # Create time series graphs? 1 = Yes or 0 = No
-time_series<-0
+time_series<-1
 	# Create time series of correlation of two variables? 1 = Yes or 0 = No
 correlation_distribution<-0
 	# Plot ratios.
