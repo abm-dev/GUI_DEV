@@ -60,15 +60,6 @@ print(paste("Number xml files: ", number_xml))
 
 
 # Number of Agent types.
-Firm = 80
-Household = 1600
-Mall = 1
-IGFirm = 1
-Eurostat = 1
-Bank = 20
-Government = 1
-CentralBank = 1
-ClearingHouse = 1
 ########################################Input-Section: Settings for Analysis #########################################################
 # Create time series graphs? 1 = Yes or 0 = No
 time_series<-1
@@ -77,15 +68,15 @@ correlation_distribution<-0
 	# Plot ratios.
 ratio<-0
 	# Create boxplots? 1 = Yes or 0 = No
-boxplot<-0
-boxplot_iteration_vector<-c( 5000)
+boxplot<-1
+boxplot_iteration_vector<-c( 0)
 print("Boxplots_iteration_vector: ")
 print(as.numeric(boxplot_iteration_vector))
 # Choose number of last observations. Boxplots for parameter comparison are based on the average of the last observations in each run.
 last_observations<-20# Create histograms? 1 = Yes or 0 = No
-histogram<-0
+histogram<-1
 # Choose the iterations for histograms.
-histogram_iteration_vector<-c( 5000)
+histogram_iteration_vector<-c( 0)
 # Choose number of bins for batch run.
 bins<-10
 print("Histogram_iteration_vector: ")

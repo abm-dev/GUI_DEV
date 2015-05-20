@@ -1,3 +1,15 @@
+/***   Simulation GUI v0.99
+   Copyright (C) 2014 Gregor Boehl, Sander van der Hoog, Herbert Dawid, Simon Gemkow, Philipp Harting
+
+   This program is free software: you can redistribute it and/or modify
+   it under the terms of the Open Database License (ODbL 1.0) as published by
+   the Open Data Commons, see <http://opendatacommons.org/licenses/odbl/>.
+   This program is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+*/
+
+
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
@@ -121,11 +133,8 @@ public class AgentPlottingVariableList extends JDialog{
 	private ArrayList<Agent> tempAgentSettingList;
 	private ArrayList <PlottingSettings.SingleTimeSeries> tempListOfSingleTimeSeries;
 	private ArrayList <PlottingSettings.MultipleTimeSeries> tempListOfMultipleTimeSeries;
-	private ArrayList <PlottingSettings.SingleBandpassFilteredTimeSeries> tempListOfSingleBandpassFilteredTimeSeries;
-	private ArrayList <PlottingSettings.MultipleBandpassFilteredTimeSeries> tempListOfMultipleBandpassFilteredTimeSeries;
-	private ArrayList <PlottingSettings.ScatterPlots> tempListOfScatterPlots;
-	private ArrayList <PlottingSettings.CrossCorrelation> tempListOfCrossCorrelation;
 	
+
 	
 	AgentPlottingVariableList(ArrayList<Agent> agentsPassed){
 		
@@ -168,33 +177,7 @@ public class AgentPlottingVariableList extends JDialog{
 			
 		}
 
-		tempListOfSingleBandpassFilteredTimeSeries = new ArrayList <PlottingSettings.SingleBandpassFilteredTimeSeries>();
-		for(int i= 0; i< PlottingSettings.listOfSingleBandpassFilteredTimeSeries.size();i++){
-			
-			tempListOfSingleBandpassFilteredTimeSeries.add(AuxFunctions.DeepCopySingleBandpassFilteredTimeSeriesList(PlottingSettings.listOfSingleBandpassFilteredTimeSeries.get(i)));
-			
-		}
-
-		tempListOfMultipleBandpassFilteredTimeSeries = new ArrayList <PlottingSettings.MultipleBandpassFilteredTimeSeries>();
-		for(int i= 0; i< PlottingSettings.listOfMultipleBandpassFilteredTimeSeries.size();i++){
-			
-			tempListOfMultipleBandpassFilteredTimeSeries.add(AuxFunctions.DeepCopyMultipleBandpassFilteredTimeSeriesList(PlottingSettings.listOfMultipleBandpassFilteredTimeSeries.get(i)));
-			
-		}
-
-		tempListOfScatterPlots = new ArrayList <PlottingSettings.ScatterPlots>();
-		for(int i= 0; i< PlottingSettings.listOfScatterPlots.size();i++){
-			
-			tempListOfScatterPlots.add(PlottingSettings.listOfScatterPlots.get(i).clone());
-			
-		}
-
-		tempListOfCrossCorrelation = new ArrayList <PlottingSettings.CrossCorrelation>();
-		for(int i= 0; i< PlottingSettings.listOfCrossCorrelation.size();i++){
-			
-			tempListOfCrossCorrelation.add(PlottingSettings.listOfCrossCorrelation.get(i).clone());
-			
-		}
+		
 
 		/*Dialog settings*/	
 	    setTitle("Time Series");
@@ -234,11 +217,6 @@ public class AgentPlottingVariableList extends JDialog{
 	    			
 	    			PlottingSettings.listOfSingleTimeSeries = tempListOfSingleTimeSeries;
 	    			PlottingSettings.listOfMultipleTimeSeries = tempListOfMultipleTimeSeries ;
-	    			PlottingSettings.listOfSingleBandpassFilteredTimeSeries =tempListOfSingleBandpassFilteredTimeSeries ;
-	    			PlottingSettings.listOfMultipleBandpassFilteredTimeSeries = tempListOfMultipleBandpassFilteredTimeSeries  ;
-	    			PlottingSettings.listOfScatterPlots = tempListOfScatterPlots  ;
-	    			PlottingSettings.listOfCrossCorrelation	= tempListOfCrossCorrelation;
-	    			
 	    			setVisible(false);
 	    			dispose();
 	    			
@@ -478,11 +456,7 @@ public class AgentPlottingVariableList extends JDialog{
 				
 				PlottingSettings.listOfSingleTimeSeries = tempListOfSingleTimeSeries;
     			PlottingSettings.listOfMultipleTimeSeries = tempListOfMultipleTimeSeries ;
-    			PlottingSettings.listOfSingleBandpassFilteredTimeSeries =tempListOfSingleBandpassFilteredTimeSeries ;
-    			PlottingSettings.listOfMultipleBandpassFilteredTimeSeries = tempListOfMultipleBandpassFilteredTimeSeries  ;
-    			PlottingSettings.listOfScatterPlots = tempListOfScatterPlots  ;
-    			PlottingSettings.listOfCrossCorrelation	= tempListOfCrossCorrelation;
-				
+
 			}
 		});
 		menuPlotting.add(applyChanges);
@@ -506,10 +480,6 @@ public class AgentPlottingVariableList extends JDialog{
 	    			
 	    			PlottingSettings.listOfSingleTimeSeries = tempListOfSingleTimeSeries;
 	    			PlottingSettings.listOfMultipleTimeSeries = tempListOfMultipleTimeSeries ;
-	    			PlottingSettings.listOfSingleBandpassFilteredTimeSeries =tempListOfSingleBandpassFilteredTimeSeries ;
-	    			PlottingSettings.listOfMultipleBandpassFilteredTimeSeries = tempListOfMultipleBandpassFilteredTimeSeries  ;
-	    			PlottingSettings.listOfScatterPlots = tempListOfScatterPlots  ;
-	    			PlottingSettings.listOfCrossCorrelation	= tempListOfCrossCorrelation;
 	    			setVisible(false);
 	    			dispose();
 	    			
@@ -5116,138 +5086,7 @@ public class AgentPlottingVariableList extends JDialog{
 	
 				
 					
-						if( listOfVariableInstances.get(j).isSelectedForCrossCorrelation ){
-							
-							for(int k=0; k <tempListOfCrossCorrelation.size(); k++){
-								
-								boolean found = false;
-								
-								if(tempListOfCrossCorrelation.get(k).firstComponent.isVariableInstance){
-									
-									if(tempListOfCrossCorrelation.get(k).firstComponent.variableInstance.isVariable){
-										
-										
-										if(tempListOfCrossCorrelation.get(k).firstComponent.variableInstance.variable.name.equals(variableName)){
-											
-											tempListOfCrossCorrelation.remove(k);
-											k--;
-											found = true;
-											
-										}
-								
-									}
-									
-									
-									
-									
-									
-								}else{
-									
-								
-										if(tempListOfCrossCorrelation.get(k).firstComponent.ratioInstance.numerator.variable.name.equals(variableName)|| tempListOfCrossCorrelation.get(k).firstComponent.ratioInstance.denominator.variable.name.equals(variableName)){
-											
-											tempListOfCrossCorrelation.remove(k);
-											k--;
-											found = true;
-											
-										}
-								
-									
-									
-									
-									
-								}
-								
-								
-								if(!found){
-									
-									if(tempListOfCrossCorrelation.get(k).secondComponent.isVariableInstance){
-										
-										if(tempListOfCrossCorrelation.get(k).secondComponent.variableInstance.isVariable){
-											
-											
-											if(tempListOfCrossCorrelation.get(k).secondComponent.variableInstance.variable.name.equals(variableName)){
-												
-												tempListOfCrossCorrelation.remove(k);
-												k--;
-												found = true;
-												
-											}
-									
-										}
-										
-										
-										
-										
-										
-									}else{
-										
-									
-											if(tempListOfCrossCorrelation.get(k).secondComponent.ratioInstance.numerator.variable.name.equals(variableName)|| tempListOfCrossCorrelation.get(k).firstComponent.ratioInstance.denominator.variable.name.equals(variableName)){
-												
-												tempListOfCrossCorrelation.remove(k);
-												k--;
-												found = true;
-												
-											}
-								
-									}
-									
-									
-								}
-								
-								
-							}
-								
-								
-							
-							
-						}
-							
-							
-						if( listOfVariableInstances.get(j).isSelectedForMultipleBandpassFilteredTimeSeries){
-							
-							for(int k=0; k <tempListOfMultipleBandpassFilteredTimeSeries.size(); k++){
-								
-								for(int l=0; l < tempListOfMultipleBandpassFilteredTimeSeries.get(k).variableInstancesUsedForMultioleTimeSeries.size();l++){
-									
-									if(tempListOfMultipleBandpassFilteredTimeSeries.get(k).variableInstancesUsedForMultioleTimeSeries.get(l).isVariable){
-									
-										if(tempListOfMultipleBandpassFilteredTimeSeries.get(k).variableInstancesUsedForMultioleTimeSeries.get(l).variable.name.equals(variableName)){
-										
-											tempListOfMultipleBandpassFilteredTimeSeries.get(k).variableInstancesUsedForMultioleTimeSeries.remove(l);
-											l--;
-										}
-										}
-										
-								}
-								
-								for(int l=0; l < tempListOfMultipleBandpassFilteredTimeSeries.get(k).ratiosUsedForMultioleTimeSeries.size();l++){
-									
-									if(variableName.equals(tempListOfMultipleBandpassFilteredTimeSeries.get(k).ratiosUsedForMultioleTimeSeries.get(l).denominator.variable.name) || variableName.equals(tempListOfMultipleBandpassFilteredTimeSeries.get(k).ratiosUsedForMultioleTimeSeries.get(l).numerator.variable.name)){
-										
-										tempListOfMultipleBandpassFilteredTimeSeries.get(k).ratiosUsedForMultioleTimeSeries.remove(l);
-										l--;
-									
-								}
-									
-									
-								}
-								
-								
-							
-								
-								if(tempListOfMultipleBandpassFilteredTimeSeries.get(k).variableInstancesUsedForMultioleTimeSeries.size()==0 &&  tempListOfMultipleBandpassFilteredTimeSeries.get(k).ratiosUsedForMultioleTimeSeries.size()==0){
-									
-									tempListOfMultipleBandpassFilteredTimeSeries.remove(k);
-									
-								}
-								
-								
-							}
-							
-							
-						}
+						
 							
 						if( listOfVariableInstances.get(j).isSelectedForMultipleTimeSeries ){
 							
@@ -5295,129 +5134,7 @@ public class AgentPlottingVariableList extends JDialog{
 							
 								
 						}	
-						if( listOfVariableInstances.get(j).isSelectedForScatterplots){
-							
-							for(int k=0; k <tempListOfScatterPlots.size(); k++){
-								
-								boolean found = false;
-								
-								if(tempListOfScatterPlots.get(k).firstComponent.isVariableInstance){
-									
-									if(tempListOfScatterPlots.get(k).firstComponent.variableInstance.isVariable){
-										
-										
-										if(tempListOfScatterPlots.get(k).firstComponent.variableInstance.variable.name.equals(variableName)){
-											
-											tempListOfScatterPlots.remove(k);
-											k--;
-											found = true;
-											
-										}
-								
-									}
-									
-									
-									
-									
-									
-								}else{
-									
-								
-										if(tempListOfScatterPlots.get(k).firstComponent.ratioInstance.numerator.variable.name.equals(variableName)|| tempListOfCrossCorrelation.get(k).firstComponent.ratioInstance.denominator.variable.name.equals(variableName)){
-											
-											tempListOfScatterPlots.remove(k);
-											k--;
-											found = true;
-											
-										}
-								
-									
-									
-									
-									
-								}
-								
-								
-								if(!found){
-									
-									if(tempListOfScatterPlots.get(k).secondComponent.isVariableInstance){
-										
-										if(tempListOfScatterPlots.get(k).secondComponent.variableInstance.isVariable){
-											
-											
-											if(tempListOfScatterPlots.get(k).secondComponent.variableInstance.variable.name.equals(variableName)){
-												
-												tempListOfScatterPlots.remove(k);
-												k--;
-												found = true;
-												
-											}
-									
-										}
-										
-										
-										
-										
-										
-									}else{
-										
-									
-											if(tempListOfScatterPlots.get(k).secondComponent.ratioInstance.numerator.variable.name.equals(variableName)|| tempListOfCrossCorrelation.get(k).firstComponent.ratioInstance.denominator.variable.name.equals(variableName)){
-												
-												tempListOfScatterPlots.remove(k);
-												k--;
-												found = true;
-												
-											}
-								
-									}
-									
-									
-								}
-								
-								
-							}
-							
-							
-							
-							
-						}
-									
-									
-						if(  listOfVariableInstances.get(j).selectedForSingleBandpassFilteredTimeSeries  )
-						{
-							
-							for(int k=0; k <tempListOfSingleBandpassFilteredTimeSeries.size(); k++){
-								
-								
-								if(tempListOfSingleBandpassFilteredTimeSeries.get(k).isVariableInstance){
-									
-									if(variableName.equals(tempListOfSingleBandpassFilteredTimeSeries.get(k).variableInstance.variable.name)){
-										
-										tempListOfSingleBandpassFilteredTimeSeries.remove(k);
-										k--;
-										
-									}
-									
 						
-						
-								}else{
-									
-										if(variableName.equals(tempListOfSingleBandpassFilteredTimeSeries.get(k).ratioInstance.denominator.variable.name) || variableName.equals(tempListOfSingleBandpassFilteredTimeSeries.get(k).ratioInstance.numerator.variable.name)){
-										
-											tempListOfSingleBandpassFilteredTimeSeries.remove(k);
-										k--;
-										
-									}
-									
-									
-								}
-								
-								
-								
-							}
-							
-						}
 						if( listOfVariableInstances.get(j).selectedForSingleTimeSeries){
 							
 							for(int k=0; k <tempListOfSingleTimeSeries.size(); k++){
@@ -5537,88 +5254,7 @@ public class AgentPlottingVariableList extends JDialog{
 				if(removevariable){
 		
 				
-					if( tempRatioListForPlotting.get(j).isSelectedForCrossCorrelation ){
-						
-						for(int k=0; k <tempListOfCrossCorrelation.size(); k++){
-							
-							boolean found = false;
-							
-							if(!tempListOfCrossCorrelation.get(k).firstComponent.isVariableInstance){
-								
 					
-								if(tempListOfCrossCorrelation.get(k).firstComponent.ratioInstance.ratioInstanceName.equals(ratioName)){
-									
-									tempListOfCrossCorrelation.remove(k);
-									k--;
-									found = true;
-									
-								}
-						
-							}
-				
-							if(!found){
-								
-								if(!tempListOfCrossCorrelation.get(k).secondComponent.isVariableInstance){
-									
-									if(tempListOfCrossCorrelation.get(k).secondComponent.variableInstance.isVariable){
-										
-										
-										if(tempListOfCrossCorrelation.get(k).secondComponent.variableInstance.variable.name.equals(ratioName)){
-											
-											tempListOfCrossCorrelation.remove(k);
-											k--;
-											found = true;
-											
-										}
-								
-									}
-									
-					
-							}
-							
-							
-						}
-							
-							
-						
-						
-					}
-							
-					}
-						
-					
-						
-						
-					if( tempRatioListForPlotting.get(j).isSelectedForMultipleBandpassFilteredTimeSeries){
-						
-						for(int k=0; k <tempListOfMultipleBandpassFilteredTimeSeries.size(); k++){
-							
-							for(int l=0; l < tempListOfMultipleBandpassFilteredTimeSeries.get(k).ratiosUsedForMultioleTimeSeries.size();l++){
-								
-								if(ratioName.equals(tempListOfMultipleBandpassFilteredTimeSeries.get(k).ratiosUsedForMultioleTimeSeries.get(l).ratioInstanceName)){
-									
-									tempListOfMultipleBandpassFilteredTimeSeries.get(k).ratiosUsedForMultioleTimeSeries.remove(l);
-									l--;
-								
-							}
-								
-								
-							}
-							
-							
-						
-							
-							if(tempListOfMultipleBandpassFilteredTimeSeries.get(k).variableInstancesUsedForMultioleTimeSeries.size()==0 &&  tempListOfMultipleBandpassFilteredTimeSeries.get(k).ratiosUsedForMultioleTimeSeries.size()==0){
-								
-								tempListOfMultipleBandpassFilteredTimeSeries.remove(k);
-								
-							}
-							
-							
-						}
-						
-						
-					}
 						
 					if( tempRatioListForPlotting.get(j).isSelectedForMultipleTimeSeries ){
 						
@@ -5653,79 +5289,6 @@ public class AgentPlottingVariableList extends JDialog{
 						
 							
 					}	
-					if( tempRatioListForPlotting.get(j).isSelectedForScatterplots){
-						
-						for(int k=0; k <tempListOfScatterPlots.size(); k++){
-							
-							boolean found = false;
-							
-							if(!tempListOfScatterPlots.get(k).firstComponent.isVariableInstance){
-								
-							
-									
-									
-									if(tempListOfScatterPlots.get(k).firstComponent.ratioInstance.ratioInstanceName.equals(ratioName)){
-										
-										tempListOfScatterPlots.remove(k);
-										k--;
-										found = true;
-										
-									}
-							
-								}
-							
-						
-								
-								
-							
-							
-							if(!found){
-								
-								if(!tempListOfScatterPlots.get(k).secondComponent.isVariableInstance){
-				
-									if(tempListOfScatterPlots.get(k).secondComponent.ratioInstance.ratioInstanceName.equals(ratioName)){
-										
-										tempListOfScatterPlots.remove(k);
-										k--;
-										found = true;
-										
-									}
-			
-							}
-		
-						}
-	
-					}
-						
-					}
-								
-								
-					if(  tempRatioListForPlotting.get(j).selectedForSingleBandpassFilteredTimeSeries  )
-					{
-						
-						for(int k=0; k <tempListOfSingleBandpassFilteredTimeSeries.size(); k++){
-							
-							
-							if(!tempListOfSingleBandpassFilteredTimeSeries.get(k).isVariableInstance){
-								
-								if(ratioName.equals(tempListOfSingleBandpassFilteredTimeSeries.get(k).ratioInstance.ratioInstanceName)){
-									
-									tempListOfSingleBandpassFilteredTimeSeries.remove(k);
-									k--;
-									
-								}
-								
-					
-					
-							}
-							
-							
-							
-						}
-						
-					}
-					
-					
 					
 					
 					if( tempRatioListForPlotting.get(j).selectedForSingleTimeSeries){

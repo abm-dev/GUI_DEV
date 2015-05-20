@@ -1,8 +1,16 @@
 
 import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -10,15 +18,25 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import javax.swing.BorderFactory;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.ButtonGroup;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
+import javax.swing.JTable;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.TableColumn;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import org.w3c.dom.Document;
@@ -30,7 +48,7 @@ import org.w3c.dom.NodeList;
  *
  * @author Sandmann
  */
-public class SimulationSettingsFrame extends javax.swing.JFrame {
+public class EditableGui extends javax.swing.JFrame {
 
     // variables from multigui
     /*
@@ -53,22 +71,48 @@ public class SimulationSettingsFrame extends javax.swing.JFrame {
     /**
      * Creates new form SimulationSettingsFrame
      */
-    public SimulationSettingsFrame() {
+    public EditableGui() {
 
         initComponents();
+        
+        testLabelPlotting.setVisible(false);
+        simulationSettingsTestLabel.setVisible(false);
+        
+        //the window appearing on attempt to close the gui
+        addWindowListener(new WindowAdapter() {
+            public void windowClosing(WindowEvent e) {
+                Object text = "Do you want to save the settings before quitting? \n";
+                int choice = JOptionPane.showConfirmDialog(null, text, "Exit GUI", JOptionPane.YES_NO_CANCEL_OPTION);
+                if (choice == 0) {
+                    /*Save Settings*/
+                    SaveSettings();
+                    setVisible(false);
+                    dispose();
+                    System.exit(-1);
+                } else if (choice == 1) {
+                    /*Choice is no*/
+                    setVisible(false);
+                    dispose();
+                }
+            }
+        });
 
         readSettingsFromFile();
         settingContainer = new TabSettings();
         plottingContainer = new TabPlotting();
 
         oldFillMenu_FromMultiGUIConstructor();
-        jButton4.setEnabled(SimulationSettings.experimentBuilt);
-        OldTabExperimentInitialization();
-        OldTabPlottingInitialization();
+        runExperimentButton.setEnabled(SimulationSettings.experimentBuilt);
+        //OldTabExperimentInitialization();
+        //OldTabPlottingInitialization();
+
+        //new simulation settings page:
+        addOldSumulationPanelFunctionalityInNewSimulationTab();
         newDrawAgentTable();
+        //drawAgentTable();
 
         //new plotting settings page
-        addOldTabsInNewTabPlottingPage();
+        addOldSubTabsInNewTabPlottingPage();
         addOldBottomPanelFunctionalityInNewTabPlottingPage();
 
         setVisible(true);
@@ -81,38 +125,42 @@ public class SimulationSettingsFrame extends javax.swing.JFrame {
         buttonGroup1 = new javax.swing.ButtonGroup();
         buttonGroup2 = new javax.swing.ButtonGroup();
         buttonGroup3 = new javax.swing.ButtonGroup();
+        buttonGroup4 = new javax.swing.ButtonGroup();
         jButton3 = new javax.swing.JButton();
-        jButton4 = new javax.swing.JButton();
+        runExperimentButton = new javax.swing.JButton();
         jTabbedPane2 = new javax.swing.JTabbedPane();
+        jScrollPane3 = new javax.swing.JScrollPane();
         jPanel6 = new javax.swing.JPanel();
         jPanel1 = new javax.swing.JPanel();
-        jRadioButton1 = new javax.swing.JRadioButton();
-        jRadioButton2 = new javax.swing.JRadioButton();
+        doNotRunSimulationsRadioButton = new javax.swing.JRadioButton();
+        runSimulationsRadioButton = new javax.swing.JRadioButton();
         jPanel2 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
-        jTextField1 = new javax.swing.JTextField();
-        jTextField2 = new javax.swing.JTextField();
-        jComboBox1 = new javax.swing.JComboBox();
-        jButton1 = new javax.swing.JButton();
+        numberOfBatchRunsTextField = new javax.swing.JTextField();
+        numberOfIterationsTextField = new javax.swing.JTextField();
+        numberOfProcessorsComboBox = new javax.swing.JComboBox();
+        changeParameterSetupButton = new javax.swing.JButton();
         jPanel3 = new javax.swing.JPanel();
-        jRadioButton3 = new javax.swing.JRadioButton();
-        jRadioButton4 = new javax.swing.JRadioButton();
-        jButton2 = new javax.swing.JButton();
-        jScrollPane1 = new javax.swing.JScrollPane();
-        jTextArea1 = new javax.swing.JTextArea();
+        runOnlyOneBatchRadioButton = new javax.swing.JRadioButton();
+        parameterVariationOneParameterRadioButton = new javax.swing.JRadioButton();
+        editParameter1Button = new javax.swing.JButton();
+        jScrollPane5 = new javax.swing.JScrollPane();
+        jTable2 = new javax.swing.JTable();
+        simulationSettingsTestLabel = new javax.swing.JLabel();
         jPanel4 = new javax.swing.JPanel();
-        jRadioButton5 = new javax.swing.JRadioButton();
-        jRadioButton6 = new javax.swing.JRadioButton();
-        jRadioButton7 = new javax.swing.JRadioButton();
-        jRadioButton8 = new javax.swing.JRadioButton();
-        jRadioButton9 = new javax.swing.JRadioButton();
-        jScrollPane2 = new javax.swing.JScrollPane();
-        jTable1 = new javax.swing.JTable();
-        jRadioButton10 = new javax.swing.JRadioButton();
-        jRadioButton11 = new javax.swing.JRadioButton();
+        notCompressRadioButton = new javax.swing.JRadioButton();
+        compressAndRemoveOrigRadioButton = new javax.swing.JRadioButton();
+        compressAndKeepOrigRadioButton = new javax.swing.JRadioButton();
+        removeDecompressedRadioButton = new javax.swing.JRadioButton();
+        decompressRadioButton = new javax.swing.JRadioButton();
+        yesWriteAllDatabaseRadioButton = new javax.swing.JRadioButton();
+        noWriteAllDatabaseRadioButton = new javax.swing.JRadioButton();
         jLabel4 = new javax.swing.JLabel();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        jTable1 = new javax.swing.JTable();
+        jScrollPane4 = new javax.swing.JScrollPane();
         jPanel7 = new javax.swing.JPanel();
         jTabbedPane3 = new javax.swing.JTabbedPane();
         jPanel5 = new javax.swing.JPanel();
@@ -125,28 +173,8 @@ public class SimulationSettingsFrame extends javax.swing.JFrame {
         jLabel5 = new javax.swing.JLabel();
         transitionPhaseTextFieldNew = new javax.swing.JTextField();
         jLabel6 = new javax.swing.JLabel();
-        TestLabel = new javax.swing.JLabel();
+        testLabelPlotting = new javax.swing.JLabel();
         menuBar = new javax.swing.JMenuBar();
-        jMenu1 = new javax.swing.JMenu();
-        jMenuItem1 = new javax.swing.JMenuItem();
-        jMenuItem2 = new javax.swing.JMenuItem();
-        jMenuItem3 = new javax.swing.JMenuItem();
-        jMenuItem4 = new javax.swing.JMenuItem();
-        jMenuItem5 = new javax.swing.JMenuItem();
-        jMenuItem6 = new javax.swing.JMenuItem();
-        jMenu2 = new javax.swing.JMenu();
-        jMenu3 = new javax.swing.JMenu();
-        jMenuItem7 = new javax.swing.JMenuItem();
-        jMenuItem8 = new javax.swing.JMenuItem();
-        jMenuItem9 = new javax.swing.JMenuItem();
-        jMenuItem10 = new javax.swing.JMenuItem();
-        jMenu4 = new javax.swing.JMenu();
-        jMenu5 = new javax.swing.JMenu();
-        jMenuItem11 = new javax.swing.JMenuItem();
-        jMenuItem12 = new javax.swing.JMenuItem();
-        jMenu6 = new javax.swing.JMenu();
-        jMenuItem13 = new javax.swing.JMenuItem();
-        jMenuItem14 = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -157,24 +185,30 @@ public class SimulationSettingsFrame extends javax.swing.JFrame {
             }
         });
 
-        jButton4.setText("Run Experiment");
-
-        jPanel1.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
-
-        buttonGroup1.add(jRadioButton1);
-        jRadioButton1.setText("Do not run Simulations");
-        jRadioButton1.addActionListener(new java.awt.event.ActionListener() {
+        runExperimentButton.setText("Run Experiment");
+        runExperimentButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jRadioButton1ActionPerformed(evt);
+                runExperimentButtonActionPerformed(evt);
             }
         });
 
-        buttonGroup1.add(jRadioButton2);
-        jRadioButton2.setSelected(true);
-        jRadioButton2.setText("Run Simulations");
-        jRadioButton2.addActionListener(new java.awt.event.ActionListener() {
+        jPanel1.setBackground(new java.awt.Color(255, 255, 255));
+        jPanel1.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
+
+        buttonGroup1.add(doNotRunSimulationsRadioButton);
+        doNotRunSimulationsRadioButton.setText("Do not run Simulations");
+        doNotRunSimulationsRadioButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jRadioButton2ActionPerformed(evt);
+                doNotRunSimulationsRadioButtonActionPerformed(evt);
+            }
+        });
+
+        buttonGroup1.add(runSimulationsRadioButton);
+        runSimulationsRadioButton.setSelected(true);
+        runSimulationsRadioButton.setText("Run Simulations");
+        runSimulationsRadioButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                runSimulationsRadioButtonActionPerformed(evt);
             }
         });
 
@@ -183,22 +217,23 @@ public class SimulationSettingsFrame extends javax.swing.JFrame {
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jRadioButton2)
-                .addGap(50, 50, 50)
-                .addComponent(jRadioButton1)
-                .addContainerGap(59, Short.MAX_VALUE))
+                .addGap(118, 118, 118)
+                .addComponent(runSimulationsRadioButton)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(doNotRunSimulationsRadioButton)
+                .addGap(142, 142, 142))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGap(15, 15, 15)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jRadioButton1)
-                    .addComponent(jRadioButton2))
-                .addGap(40, 40, 40))
+                    .addComponent(doNotRunSimulationsRadioButton)
+                    .addComponent(runSimulationsRadioButton))
+                .addContainerGap(14, Short.MAX_VALUE))
         );
 
+        jPanel2.setBackground(new java.awt.Color(255, 255, 255));
         jPanel2.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
 
         jLabel1.setText("Number of batch Runs");
@@ -207,156 +242,227 @@ public class SimulationSettingsFrame extends javax.swing.JFrame {
 
         jLabel3.setText("Number of Processes");
 
-        jTextField1.setText("10");
+        numberOfBatchRunsTextField.setText("10");
+        numberOfBatchRunsTextField.addCaretListener(new javax.swing.event.CaretListener() {
+            public void caretUpdate(javax.swing.event.CaretEvent evt) {
+                numberOfBatchRunsTextFieldCaretUpdate(evt);
+            }
+        });
 
-        jTextField2.setText("5000");
+        numberOfIterationsTextField.setText("5000");
+        numberOfIterationsTextField.addCaretListener(new javax.swing.event.CaretListener() {
+            public void caretUpdate(javax.swing.event.CaretEvent evt) {
+                numberOfIterationsTextFieldCaretUpdate(evt);
+            }
+        });
 
-        jComboBox1.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "1", "2", "3", "4", "5", "6", "7", " " }));
+        numberOfProcessorsComboBox.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "1", "2", "3", "4", "5", "6", "7", " " }));
+        numberOfProcessorsComboBox.setEnabled(false);
 
-        jButton1.setText("Change Parameter Setup");
+        changeParameterSetupButton.setText("Change Parameter Setup");
+        changeParameterSetupButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                changeParameterSetupButtonActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel2Layout.createSequentialGroup()
-                .addGap(32, 32, 32)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
+                        .addComponent(jLabel3)
+                        .addGap(6, 6, 6))
+                    .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGap(36, 36, 36)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                    .addComponent(numberOfBatchRunsTextField)
                     .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addComponent(jLabel1)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel2)
-                            .addComponent(jLabel3))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 86, Short.MAX_VALUE)
-                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                .addGap(70, 70, 70)
-                .addComponent(jButton1)
-                .addGap(29, 29, 29))
+                        .addComponent(numberOfIterationsTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 66, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(1, 1, 1))
+                    .addComponent(numberOfProcessorsComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, 67, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(61, 61, 61)
+                .addComponent(changeParameterSetupButton)
+                .addGap(93, 93, 93))
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel2Layout.createSequentialGroup()
-                .addGap(20, 20, 20)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel1))
+                .addContainerGap()
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel1)
                     .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addComponent(numberOfBatchRunsTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel2))
+                            .addComponent(numberOfIterationsTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel2)
+                            .addComponent(changeParameterSetupButton))
                         .addGap(18, 18, 18)
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jButton1))
-                        .addContainerGap(38, Short.MAX_VALUE))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jLabel3)
-                        .addGap(38, 38, 38))))
+                            .addComponent(numberOfProcessorsComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel3))))
+                .addGap(0, 41, Short.MAX_VALUE))
         );
 
+        jPanel3.setBackground(new java.awt.Color(255, 255, 255));
         jPanel3.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
 
-        buttonGroup2.add(jRadioButton3);
-        jRadioButton3.setSelected(true);
-        jRadioButton3.setText("Run only one Batch");
-        jRadioButton3.setToolTipText("");
-
-        buttonGroup2.add(jRadioButton4);
-        jRadioButton4.setText("Parameter Variation with one Parameter");
-        jRadioButton4.addActionListener(new java.awt.event.ActionListener() {
+        buttonGroup2.add(runOnlyOneBatchRadioButton);
+        runOnlyOneBatchRadioButton.setSelected(true);
+        runOnlyOneBatchRadioButton.setText("Run only one Batch");
+        runOnlyOneBatchRadioButton.setToolTipText("");
+        runOnlyOneBatchRadioButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jRadioButton4ActionPerformed(evt);
+                runOnlyOneBatchRadioButtonActionPerformed(evt);
             }
         });
 
-        jButton2.setText("Edit Parameter 1");
-        jButton2.setEnabled(false);
+        buttonGroup2.add(parameterVariationOneParameterRadioButton);
+        parameterVariationOneParameterRadioButton.setText("Parameter Variation with one Parameter");
+        parameterVariationOneParameterRadioButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                parameterVariationOneParameterRadioButtonActionPerformed(evt);
+            }
+        });
 
-        jTextArea1.setColumns(20);
-        jTextArea1.setRows(5);
-        jTextArea1.setEnabled(false);
-        jScrollPane1.setViewportView(jTextArea1);
+        editParameter1Button.setText("Edit Parameter ");
+        editParameter1Button.setEnabled(false);
+
+        jTable2.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {},
+                {},
+                {},
+                {}
+            },
+            new String [] {
+
+            }
+        ));
+        jScrollPane5.setViewportView(jTable2);
+
+        simulationSettingsTestLabel.setText("testLabel");
 
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
         jPanel3.setLayout(jPanel3Layout);
         jPanel3Layout.setHorizontalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel3Layout.createSequentialGroup()
-                .addGap(27, 27, 27)
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel3Layout.createSequentialGroup()
+                        .addGap(27, 27, 27)
+                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(parameterVariationOneParameterRadioButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(runOnlyOneBatchRadioButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addGroup(jPanel3Layout.createSequentialGroup()
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(simulationSettingsTestLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 65, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(103, 103, 103)))
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(jRadioButton4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jRadioButton3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 66, Short.MAX_VALUE)
-                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(jButton2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jScrollPane1))
-                .addGap(38, 38, 38))
+                    .addComponent(jScrollPane5, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+                    .addComponent(editParameter1Button, javax.swing.GroupLayout.PREFERRED_SIZE, 229, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(47, 47, 47))
         );
         jPanel3Layout.setVerticalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel3Layout.createSequentialGroup()
-                .addGap(16, 16, 16)
-                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jRadioButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jButton2))
-                .addGap(49, 49, 49)
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jRadioButton4))
-                .addContainerGap(19, Short.MAX_VALUE))
+                    .addGroup(jPanel3Layout.createSequentialGroup()
+                        .addGap(16, 16, 16)
+                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(editParameter1Button)
+                            .addComponent(runOnlyOneBatchRadioButton, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jScrollPane5, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+                            .addGroup(jPanel3Layout.createSequentialGroup()
+                                .addComponent(parameterVariationOneParameterRadioButton)
+                                .addGap(0, 0, Short.MAX_VALUE))))
+                    .addGroup(jPanel3Layout.createSequentialGroup()
+                        .addGap(88, 131, Short.MAX_VALUE)
+                        .addComponent(simulationSettingsTestLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap())
         );
 
+        jPanel4.setBackground(new java.awt.Color(255, 255, 255));
         jPanel4.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
 
-        buttonGroup3.add(jRadioButton5);
-        jRadioButton5.setText("Do not compress");
+        buttonGroup3.add(notCompressRadioButton);
+        notCompressRadioButton.setText("Do not compress");
+        notCompressRadioButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                notCompressRadioButtonActionPerformed(evt);
+            }
+        });
 
-        buttonGroup3.add(jRadioButton6);
-        jRadioButton6.setText("Compress Databases and remove Original");
+        buttonGroup3.add(compressAndRemoveOrigRadioButton);
+        compressAndRemoveOrigRadioButton.setText("Compress Databases and remove Original");
+        compressAndRemoveOrigRadioButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                compressAndRemoveOrigRadioButtonActionPerformed(evt);
+            }
+        });
 
-        buttonGroup3.add(jRadioButton7);
-        jRadioButton7.setText("Compress Databases and keep Original");
+        buttonGroup3.add(compressAndKeepOrigRadioButton);
+        compressAndKeepOrigRadioButton.setText("Compress Databases and keep Original");
+        compressAndKeepOrigRadioButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                compressAndKeepOrigRadioButtonActionPerformed(evt);
+            }
+        });
 
-        buttonGroup3.add(jRadioButton8);
-        jRadioButton8.setText("Remove decompressed Database");
+        buttonGroup3.add(removeDecompressedRadioButton);
+        removeDecompressedRadioButton.setText("Remove decompressed Database");
+        removeDecompressedRadioButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                removeDecompressedRadioButtonActionPerformed(evt);
+            }
+        });
 
-        buttonGroup3.add(jRadioButton9);
-        jRadioButton9.setText("Decompress Database");
+        buttonGroup3.add(decompressRadioButton);
+        decompressRadioButton.setText("Decompress Database");
+        decompressRadioButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                decompressRadioButtonActionPerformed(evt);
+            }
+        });
+
+        buttonGroup4.add(yesWriteAllDatabaseRadioButton);
+        yesWriteAllDatabaseRadioButton.setText("Yes");
+        yesWriteAllDatabaseRadioButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                yesWriteAllDatabaseRadioButtonActionPerformed(evt);
+            }
+        });
+
+        buttonGroup4.add(noWriteAllDatabaseRadioButton);
+        noWriteAllDatabaseRadioButton.setText("No");
+        noWriteAllDatabaseRadioButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                noWriteAllDatabaseRadioButtonActionPerformed(evt);
+            }
+        });
+
+        jLabel4.setText("Write all agent variables to Database");
 
         jTable1.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null}
+                {},
+                {},
+                {},
+                {}
             },
             new String [] {
-                "Agent", "Record", "Period", "Phase"
+
             }
-        ) {
-            boolean[] canEdit = new boolean [] {
-                false, true, true, true
-            };
-
-            public boolean isCellEditable(int rowIndex, int columnIndex) {
-                return canEdit [columnIndex];
-            }
-        });
-        jScrollPane2.setViewportView(jTable1);
-
-        jRadioButton10.setText("Yes");
-
-        jRadioButton11.setText("No");
-
-        jLabel4.setText("Write all agent variables to Database");
+        ));
+        jScrollPane1.setViewportView(jTable1);
 
         javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
         jPanel4.setLayout(jPanel4Layout);
@@ -365,99 +471,76 @@ public class SimulationSettingsFrame extends javax.swing.JFrame {
             .addGroup(jPanel4Layout.createSequentialGroup()
                 .addGap(22, 22, 22)
                 .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jRadioButton9)
-                    .addComponent(jRadioButton8)
-                    .addComponent(jRadioButton6)
-                    .addComponent(jRadioButton5)
-                    .addComponent(jRadioButton7))
-                .addGap(18, 18, 18)
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+                    .addComponent(decompressRadioButton)
+                    .addComponent(compressAndRemoveOrigRadioButton)
+                    .addComponent(notCompressRadioButton)
+                    .addComponent(compressAndKeepOrigRadioButton)
+                    .addComponent(removeDecompressedRadioButton))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 384, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel4Layout.createSequentialGroup()
-                .addGap(96, 96, 96)
+            .addGroup(jPanel4Layout.createSequentialGroup()
+                .addGap(165, 165, 165)
                 .addComponent(jLabel4)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 209, Short.MAX_VALUE)
-                .addComponent(jRadioButton10)
                 .addGap(18, 18, 18)
-                .addComponent(jRadioButton11)
-                .addGap(114, 114, 114))
+                .addComponent(yesWriteAllDatabaseRadioButton)
+                .addGap(18, 18, 18)
+                .addComponent(noWriteAllDatabaseRadioButton)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel4Layout.setVerticalGroup(
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel4Layout.createSequentialGroup()
-                .addGap(16, 16, 16)
+                .addContainerGap()
                 .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 149, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(jPanel4Layout.createSequentialGroup()
-                        .addComponent(jRadioButton5)
+                        .addComponent(notCompressRadioButton)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jRadioButton6)
+                        .addComponent(compressAndRemoveOrigRadioButton)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jRadioButton7)
+                        .addComponent(compressAndKeepOrigRadioButton)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jRadioButton8)
+                        .addComponent(removeDecompressedRadioButton)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jRadioButton9)))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 35, Short.MAX_VALUE)
+                        .addComponent(decompressRadioButton))
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 214, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jRadioButton10)
-                    .addComponent(jRadioButton11)
+                    .addComponent(yesWriteAllDatabaseRadioButton)
+                    .addComponent(noWriteAllDatabaseRadioButton)
                     .addComponent(jLabel4))
-                .addGap(20, 20, 20))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout jPanel6Layout = new javax.swing.GroupLayout(jPanel6);
         jPanel6.setLayout(jPanel6Layout);
         jPanel6Layout.setHorizontalGroup(
             jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 0, Short.MAX_VALUE)
-            .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(jPanel6Layout.createSequentialGroup()
-                    .addGap(24, 24, 24)
-                    .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addContainerGap(355, Short.MAX_VALUE)))
-            .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(jPanel6Layout.createSequentialGroup()
-                    .addContainerGap()
-                    .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addContainerGap(216, Short.MAX_VALUE)))
-            .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(jPanel6Layout.createSequentialGroup()
-                    .addGap(37, 37, 37)
-                    .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addContainerGap(230, Short.MAX_VALUE)))
-            .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(jPanel6Layout.createSequentialGroup()
-                    .addContainerGap()
-                    .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel6Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jPanel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jPanel3, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jPanel2, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap())
         );
         jPanel6Layout.setVerticalGroup(
             jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 0, Short.MAX_VALUE)
-            .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(jPanel6Layout.createSequentialGroup()
-                    .addGap(19, 19, 19)
-                    .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 62, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addContainerGap(656, Short.MAX_VALUE)))
-            .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(jPanel6Layout.createSequentialGroup()
-                    .addGap(90, 90, 90)
-                    .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addContainerGap(495, Short.MAX_VALUE)))
-            .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(jPanel6Layout.createSequentialGroup()
-                    .addGap(282, 282, 282)
-                    .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addContainerGap(280, Short.MAX_VALUE)))
-            .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(jPanel6Layout.createSequentialGroup()
-                    .addGap(481, 481, 481)
-                    .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+            .addGroup(jPanel6Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGap(18, 18, 18)
+                .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
 
-        jTabbedPane2.addTab("New Simulation Settings", jPanel6);
+        jScrollPane3.setViewportView(jPanel6);
+
+        jTabbedPane2.addTab("Simulation Settings", jScrollPane3);
 
         singleRunAnalysisCheckboxNew.setText("Single Run Analysis");
         singleRunAnalysisCheckboxNew.setName("SingleRunAnalysisCheckboxNew\n"); // NOI18N
@@ -534,68 +617,60 @@ public class SimulationSettingsFrame extends javax.swing.JFrame {
 
         jLabel6.setText("File Type of Plots");
 
-        TestLabel.setText("jLabel7");
+        testLabelPlotting.setText("testLabel");
 
         javax.swing.GroupLayout jPanel5Layout = new javax.swing.GroupLayout(jPanel5);
         jPanel5.setLayout(jPanel5Layout);
         jPanel5Layout.setHorizontalGroup(
             jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel5Layout.createSequentialGroup()
-                .addGap(142, 142, 142)
-                .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(parameterAnalysisCheckBoxNew)
-                    .addComponent(batchRunCheckBoxNew)
-                    .addComponent(singleRunAnalysisCheckboxNew))
-                .addGap(95, 95, 95)
+                .addContainerGap()
                 .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel5Layout.createSequentialGroup()
-                        .addComponent(jLabel6)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(fileTypePlotsComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(97, 97, 97))
+                    .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                        .addComponent(parameterAnalysisCheckBoxNew)
+                        .addComponent(singleRunAnalysisCheckboxNew))
+                    .addComponent(testLabelPlotting, javax.swing.GroupLayout.PREFERRED_SIZE, 129, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(batchRunCheckBoxNew))
+                .addGap(18, 18, 18)
+                .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(addLegendCheckboxNew, javax.swing.GroupLayout.PREFERRED_SIZE, 113, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(coloredPlotsCheckboxNew, javax.swing.GroupLayout.PREFERRED_SIZE, 113, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(jPanel5Layout.createSequentialGroup()
                         .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(jPanel5Layout.createSequentialGroup()
-                                .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 113, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(transitionPhaseTextFieldNew, javax.swing.GroupLayout.PREFERRED_SIZE, 109, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addComponent(addLegendCheckboxNew)
-                            .addComponent(coloredPlotsCheckboxNew))
-                        .addContainerGap(20, Short.MAX_VALUE))))
-            .addGroup(jPanel5Layout.createSequentialGroup()
-                .addGap(186, 186, 186)
-                .addComponent(TestLabel)
-                .addGap(0, 0, Short.MAX_VALUE))
+                            .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 113, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel6))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(fileTypePlotsComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(transitionPhaseTextFieldNew, javax.swing.GroupLayout.PREFERRED_SIZE, 109, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                .addContainerGap(13, Short.MAX_VALUE))
         );
         jPanel5Layout.setVerticalGroup(
             jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel5Layout.createSequentialGroup()
+                .addContainerGap()
                 .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel5Layout.createSequentialGroup()
-                        .addGap(31, 31, 31)
-                        .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addGroup(jPanel5Layout.createSequentialGroup()
-                                .addComponent(jLabel5)
-                                .addGap(9, 9, 9))
-                            .addComponent(transitionPhaseTextFieldNew, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel5Layout.createSequentialGroup()
-                        .addContainerGap()
-                        .addComponent(singleRunAnalysisCheckboxNew)))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(batchRunCheckBoxNew)
-                    .addComponent(addLegendCheckboxNew))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(parameterAnalysisCheckBoxNew)
-                    .addComponent(coloredPlotsCheckboxNew))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(fileTypePlotsComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel6))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(TestLabel)
-                .addContainerGap(16, Short.MAX_VALUE))
+                        .addComponent(singleRunAnalysisCheckboxNew)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(batchRunCheckBoxNew)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(parameterAnalysisCheckBoxNew)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(testLabelPlotting, javax.swing.GroupLayout.DEFAULT_SIZE, 19, Short.MAX_VALUE))
+                    .addGroup(jPanel5Layout.createSequentialGroup()
+                        .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(transitionPhaseTextFieldNew, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel5, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(addLegendCheckboxNew, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(coloredPlotsCheckboxNew, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(fileTypePlotsComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                .addContainerGap(15, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout jPanel7Layout = new javax.swing.GroupLayout(jPanel7);
@@ -603,92 +678,26 @@ public class SimulationSettingsFrame extends javax.swing.JFrame {
         jPanel7Layout.setHorizontalGroup(
             jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel7Layout.createSequentialGroup()
-                .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel7Layout.createSequentialGroup()
-                        .addContainerGap()
-                        .addComponent(jTabbedPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 670, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(jPanel7Layout.createSequentialGroup()
-                        .addGap(44, 44, 44)
-                        .addComponent(jPanel5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(50, Short.MAX_VALUE))
+                .addGap(147, 147, 147)
+                .addComponent(jPanel5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 251, Short.MAX_VALUE))
+            .addGroup(jPanel7Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jTabbedPane3)
+                .addContainerGap())
         );
         jPanel7Layout.setVerticalGroup(
             jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel7Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jTabbedPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 455, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jPanel5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(25, Short.MAX_VALUE))
+                .addComponent(jTabbedPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 625, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jPanel5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
 
-        jTabbedPane2.addTab("New Plotting Settings", jPanel7);
+        jScrollPane4.setViewportView(jPanel7);
 
-        jMenu1.setText("Experiment");
-
-        jMenuItem1.setText("New");
-        jMenu1.add(jMenuItem1);
-
-        jMenuItem2.setText("Load\n");
-        jMenu1.add(jMenuItem2);
-
-        jMenuItem3.setText("Save");
-        jMenu1.add(jMenuItem3);
-
-        jMenuItem4.setText("Save as");
-        jMenu1.add(jMenuItem4);
-
-        jMenuItem5.setText("Run Batch");
-        jMenu1.add(jMenuItem5);
-
-        jMenuItem6.setText("Exit");
-        jMenu1.add(jMenuItem6);
-
-        menuBar.add(jMenu1);
-
-        jMenu2.setText("Settings\n");
-
-        jMenu3.setText("Set Paths");
-
-        jMenuItem7.setText("Set Path to Model.xml file");
-        jMenu3.add(jMenuItem7);
-
-        jMenuItem8.setText("Set Model Executable");
-        jMenu3.add(jMenuItem8);
-
-        jMenuItem9.setText("Set Initial Data File (0.xml)");
-        jMenu3.add(jMenuItem9);
-
-        jMenuItem10.setText("Set path to R scripts");
-        jMenu3.add(jMenuItem10);
-
-        jMenu2.add(jMenu3);
-
-        jMenu4.setText("Import/Export");
-
-        jMenu5.setText("Plotting Settings");
-
-        jMenuItem11.setText("Import Plotting Settings");
-        jMenu5.add(jMenuItem11);
-
-        jMenuItem12.setText("Export Plotting Settings");
-        jMenu5.add(jMenuItem12);
-
-        jMenu4.add(jMenu5);
-
-        jMenu6.setText("Parameter Settings");
-
-        jMenuItem13.setText("Import Parameter Settings");
-        jMenu6.add(jMenuItem13);
-
-        jMenuItem14.setText("Export Parameter Settings");
-        jMenu6.add(jMenuItem14);
-
-        jMenu4.add(jMenu6);
-
-        jMenu2.add(jMenu4);
-
-        menuBar.add(jMenu2);
+        jTabbedPane2.addTab("Plotting Settings", jScrollPane4);
 
         setJMenuBar(menuBar);
 
@@ -696,49 +705,32 @@ public class SimulationSettingsFrame extends javax.swing.JFrame {
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jTabbedPane2)
             .addGroup(layout.createSequentialGroup()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(128, 128, 128)
-                        .addComponent(jButton3)
-                        .addGap(233, 233, 233)
-                        .addComponent(jButton4))
-                    .addGroup(layout.createSequentialGroup()
-                        .addContainerGap()
-                        .addComponent(jTabbedPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 735, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addGap(0, 27, Short.MAX_VALUE))
+                .addGap(119, 119, 119)
+                .addComponent(jButton3)
+                .addGap(211, 211, 211)
+                .addComponent(runExperimentButton)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(39, 39, 39)
-                .addComponent(jTabbedPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 695, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jTabbedPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 731, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jButton3)
-                    .addComponent(jButton4))
-                .addContainerGap(27, Short.MAX_VALUE))
+                    .addComponent(runExperimentButton, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(39, Short.MAX_VALUE))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jRadioButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jRadioButton1ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jRadioButton1ActionPerformed
-
-    private void jRadioButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jRadioButton2ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jRadioButton2ActionPerformed
-
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
         buildExperimentButtonPressed();
 
     }//GEN-LAST:event_jButton3ActionPerformed
-
-    private void jRadioButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jRadioButton4ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jRadioButton4ActionPerformed
 
     private void singleRunAnalysisCheckboxNewActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_singleRunAnalysisCheckboxNewActionPerformed
         // TODO add your handling code here:
@@ -747,17 +739,21 @@ public class SimulationSettingsFrame extends javax.swing.JFrame {
     private void singleRunAnalysisCheckboxNewItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_singleRunAnalysisCheckboxNewItemStateChanged
         // TODO add your handling code here:
         PlottingSettings.singleRunAnalyis = singleRunAnalysisCheckboxNew.isSelected();
-        //transitionPhaseTextFieldNew.setText(PlottingSettings.singleRunAnalyis+"");
+        testLabelPlotting.setText(PlottingSettings.singleRunAnalyis + "");
     }//GEN-LAST:event_singleRunAnalysisCheckboxNewItemStateChanged
 
     private void batchRunCheckBoxNewItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_batchRunCheckBoxNewItemStateChanged
         // TODO add your handling code here:
         PlottingSettings.batchRunAnalyis = batchRunCheckBoxNew.isSelected();
+        testLabelPlotting.setText(PlottingSettings.batchRunAnalyis + "");
+
     }//GEN-LAST:event_batchRunCheckBoxNewItemStateChanged
 
     private void parameterAnalysisCheckBoxNewItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_parameterAnalysisCheckBoxNewItemStateChanged
         // TODO add your handling code here:
         PlottingSettings.parameterAnalyis = parameterAnalysisCheckBoxNew.isSelected();
+        testLabelPlotting.setText(PlottingSettings.parameterAnalyis + "");
+
     }//GEN-LAST:event_parameterAnalysisCheckBoxNewItemStateChanged
 
     private void transitionPhaseTextFieldNewKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_transitionPhaseTextFieldNewKeyTyped
@@ -785,7 +781,7 @@ public class SimulationSettingsFrame extends javax.swing.JFrame {
         try {
 
             PlottingSettings.transitionPhase = Integer.parseInt(input);
-            TestLabel.setText(PlottingSettings.transitionPhase + "");
+            testLabelPlotting.setText(PlottingSettings.transitionPhase + "");
             //transitionPhaseTextFieldNew.selectAll();
 
         } catch (NumberFormatException nFE) {
@@ -800,22 +796,210 @@ public class SimulationSettingsFrame extends javax.swing.JFrame {
     private void addLegendCheckboxNewItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_addLegendCheckboxNewItemStateChanged
         // TODO add your handling code here:
         PlottingSettings.addLegend = addLegendCheckboxNew.isSelected();
-        TestLabel.setText(PlottingSettings.addLegend + "");
+        testLabelPlotting.setText(PlottingSettings.addLegend + "");
 
     }//GEN-LAST:event_addLegendCheckboxNewItemStateChanged
 
     private void coloredPlotsCheckboxNewItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_coloredPlotsCheckboxNewItemStateChanged
         // TODO add your handling code here:
         PlottingSettings.coloured = coloredPlotsCheckboxNew.isSelected();
-        TestLabel.setText(PlottingSettings.coloured + "");
+        testLabelPlotting.setText(PlottingSettings.coloured + "");
 
     }//GEN-LAST:event_coloredPlotsCheckboxNewItemStateChanged
 
     private void fileTypePlotsComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_fileTypePlotsComboBoxActionPerformed
         // TODO add your handling code here:
         PlottingSettings.fileTypePlots = (String) fileTypePlotsComboBox.getSelectedItem();
-        TestLabel.setText(PlottingSettings.fileTypePlots + "");
+        testLabelPlotting.setText(PlottingSettings.fileTypePlots + "");
     }//GEN-LAST:event_fileTypePlotsComboBoxActionPerformed
+
+    private void decompressRadioButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_decompressRadioButtonActionPerformed
+        compressionRadioButtonModified();
+    }//GEN-LAST:event_decompressRadioButtonActionPerformed
+
+    private void removeDecompressedRadioButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_removeDecompressedRadioButtonActionPerformed
+        compressionRadioButtonModified();
+    }//GEN-LAST:event_removeDecompressedRadioButtonActionPerformed
+
+    private void compressAndKeepOrigRadioButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_compressAndKeepOrigRadioButtonActionPerformed
+        compressionRadioButtonModified();
+    }//GEN-LAST:event_compressAndKeepOrigRadioButtonActionPerformed
+
+    private void compressAndRemoveOrigRadioButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_compressAndRemoveOrigRadioButtonActionPerformed
+        compressionRadioButtonModified();
+    }//GEN-LAST:event_compressAndRemoveOrigRadioButtonActionPerformed
+
+    private void notCompressRadioButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_notCompressRadioButtonActionPerformed
+        compressionRadioButtonModified();
+    }//GEN-LAST:event_notCompressRadioButtonActionPerformed
+
+    private void parameterVariationOneParameterRadioButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_parameterVariationOneParameterRadioButtonActionPerformed
+        paneSettingMiddleAreaRadioButtonUpdated();
+        // TODO add your handling code here:
+
+        //        if (parameterVariationOneParameterRadioButton.isSelected()) {
+        //            SimulationSettings.numParameters = 1;
+        //            editParameter1Button.setEnabled(true);
+        //        }
+    }//GEN-LAST:event_parameterVariationOneParameterRadioButtonActionPerformed
+
+    private void runOnlyOneBatchRadioButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_runOnlyOneBatchRadioButtonActionPerformed
+
+        paneSettingMiddleAreaRadioButtonUpdated();
+
+        //        if (runOnlyOneBatchRadioButton.isSelected()) {
+        //            SimulationSettings.numParameters = 0;
+        //            editParameter1Button.setEnabled(false);
+        //        }
+    }//GEN-LAST:event_runOnlyOneBatchRadioButtonActionPerformed
+
+    private void changeParameterSetupButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_changeParameterSetupButtonActionPerformed
+        new JDialogParameterSetup(ModelParameterSettings.modelParameters);
+    }//GEN-LAST:event_changeParameterSetupButtonActionPerformed
+
+    private void numberOfIterationsTextFieldCaretUpdate(javax.swing.event.CaretEvent evt) {//GEN-FIRST:event_numberOfIterationsTextFieldCaretUpdate
+        String input = numberOfIterationsTextField.getText();
+
+        if (input.length() == 0) {
+            input = "0";
+        }
+
+        //String input = fieldNumIterations.getText();
+        try {
+
+            SimulationSettings.numIterations = Integer.parseInt(input);
+            //fieldNumIterations.selectAll();
+            System.out.println("numIterations: " + SimulationSettings.numIterations);
+
+            for (int i = 0; i < PlottingSettings.listOfSingleTimeSeries.size(); i++) {
+
+                PlottingSettings.listOfSingleTimeSeries.get(i).tmax = (int) Math.floor(SimulationSettings.numIterations);
+
+            }
+
+            for (int i = 0; i < PlottingSettings.listOfMultipleTimeSeries.size(); i++) {
+
+                PlottingSettings.listOfMultipleTimeSeries.get(i).tmax = (int) Math.floor(SimulationSettings.numIterations);
+
+            }
+
+            for (int i = 0; i < PlottingSettings.listOfHeatmaps.size(); i++) {
+
+                PlottingSettings.listOfHeatmaps.get(i).tmax = (int) Math.floor(SimulationSettings.numIterations);
+
+            }
+
+            boolean above = false;
+
+            for (int i = 0; i < PlottingSettings.defaultsBoxplots.iterations.size(); i++) {
+
+                if (Integer.parseInt(PlottingSettings.defaultsBoxplots.iterations.get(i).iteration) > (int) Math.floor(SimulationSettings.numIterations)) {
+
+                    if (!above) {
+                        PlottingSettings.defaultsBoxplots.iterations.get(i).iteration = Integer.toString((int) Math.floor(SimulationSettings.numIterations));
+                    } else {
+                        PlottingSettings.defaultsBoxplots.iterations.remove(i);
+                        i--;
+                    }
+                    above = true;
+
+                }
+
+            }
+
+            boolean above2 = false;
+
+            for (int i = 0; i < PlottingSettings.defaultsHistogram.iterations.size(); i++) {
+
+                if (Integer.parseInt(PlottingSettings.defaultsHistogram.iterations.get(i).iteration) > (int) Math.floor(SimulationSettings.numIterations)) {
+
+                    if (!above2) {
+                        PlottingSettings.defaultsHistogram.iterations.get(i).iteration = Integer.toString((int) Math.floor(SimulationSettings.numIterations));
+                    } else {
+                        PlottingSettings.defaultsHistogram.iterations.remove(i);
+                        i--;
+                    }
+                    above2 = true;
+
+                }
+
+            }
+
+            for (int i = 0; i < PlottingSettings.listOfHeatmaps.size(); i++) {
+
+                PlottingSettings.listOfHeatmaps.get(i).tmax = (int) Math.floor(SimulationSettings.numIterations);
+
+            }
+
+            PlottingSettings.defaultsHeatmaps.tmax = (int) Math.floor(SimulationSettings.numIterations);
+
+            PlottingSettings.defaultsSingleTimeSeries.tmax = (int) Math.floor(SimulationSettings.numIterations);
+            PlottingSettings.defaultsMultipleTimeSeries.tmax = (int) Math.floor(SimulationSettings.numIterations);
+
+        } catch (NumberFormatException nFE) {
+            JOptionPane.showMessageDialog(null, "Not an integer");
+        }
+
+        simulationSettingsTestLabel.setText(
+                "" + SimulationSettings.numIterations);
+    }//GEN-LAST:event_numberOfIterationsTextFieldCaretUpdate
+
+    private void numberOfBatchRunsTextFieldCaretUpdate(javax.swing.event.CaretEvent evt) {//GEN-FIRST:event_numberOfBatchRunsTextFieldCaretUpdate
+        // TODO add your handling code here:
+        String input = numberOfBatchRunsTextField.getText();
+        if (input.length() == 0) {
+            input = "0";
+        }
+
+        try {
+            SimulationSettings.numBatchRuns = Integer.parseInt(input);
+            //System.out.println("NumBatch runs: " + SimulationSettings.numBatchRuns);
+            //            numberOfBatchRunsTextField.selectAll();
+        } catch (NumberFormatException nFE) {
+            JOptionPane.showMessageDialog(null, "Not an integer");
+        }
+        simulationSettingsTestLabel.setText("" + SimulationSettings.numBatchRuns);
+    }//GEN-LAST:event_numberOfBatchRunsTextFieldCaretUpdate
+
+    private void runSimulationsRadioButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_runSimulationsRadioButtonActionPerformed
+        if (runSimulationsRadioButton.isSelected()) {
+            SimulationSettings.DO_RUN = 1;
+        }
+        simulationSettingsTestLabel.setText("" + SimulationSettings.DO_RUN);
+    }//GEN-LAST:event_runSimulationsRadioButtonActionPerformed
+
+    private void doNotRunSimulationsRadioButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_doNotRunSimulationsRadioButtonActionPerformed
+        // TODO add your handling code here:
+        if (doNotRunSimulationsRadioButton.isSelected()) {
+            SimulationSettings.DO_RUN = 0;
+        }
+        simulationSettingsTestLabel.setText("" + SimulationSettings.DO_RUN);
+    }//GEN-LAST:event_doNotRunSimulationsRadioButtonActionPerformed
+
+    private void yesWriteAllDatabaseRadioButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_yesWriteAllDatabaseRadioButtonActionPerformed
+        if (yesWriteAllDatabaseRadioButton.isSelected()) {
+            SimulationSettings.saveAllAgentVariables = true;
+        } else {
+            SimulationSettings.saveAllAgentVariables = false;
+        }
+        simulationSettingsTestLabel.setText("" + SimulationSettings.saveAllAgentVariables);
+
+    }//GEN-LAST:event_yesWriteAllDatabaseRadioButtonActionPerformed
+
+    private void noWriteAllDatabaseRadioButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_noWriteAllDatabaseRadioButtonActionPerformed
+        if (yesWriteAllDatabaseRadioButton.isSelected()) {
+            SimulationSettings.saveAllAgentVariables = true;
+        } else {
+            SimulationSettings.saveAllAgentVariables = false;
+        }
+        simulationSettingsTestLabel.setText("" + SimulationSettings.saveAllAgentVariables);
+    }//GEN-LAST:event_noWriteAllDatabaseRadioButtonActionPerformed
+
+    private void runExperimentButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_runExperimentButtonActionPerformed
+//        MultiGUI.ExecuteSimulations exeSim;
+//        exeSim = new MultiGUI.ExecuteSimulations();
+//        exeSim.start();        // TODO add your handling code here:
+    }//GEN-LAST:event_runExperimentButtonActionPerformed
 
     void readSettingsFromFile() {
         //new SimulationSettings();
@@ -830,7 +1014,7 @@ public class SimulationSettingsFrame extends javax.swing.JFrame {
      */
     JScrollPane settingScrollPane, plottingScrollPane;
 
-    void addOldTabsInNewTabPlottingPage() {
+    void addOldSubTabsInNewTabPlottingPage() {
         TabSingleTimeSeries tabSingleTimeSeries;
         TabMultipleTimeSeries tabMultipleTimeSeries;
         TabDistributions tabDistributions;
@@ -899,23 +1083,69 @@ public class SimulationSettingsFrame extends javax.swing.JFrame {
                 fileTypePlotsComboBox.setSelectedIndex(1);
                 break;
             default:
-                fileTypePlotsComboBox.setSelectedIndex(0);
+                fileTypePlotsComboBox.setSelectedIndex(2);
+        }
+
+    }
+
+    void addOldSumulationPanelFunctionalityInNewSimulationTab() {
+        if (SimulationSettings.DO_RUN == 1) {
+            runSimulationsRadioButton.setSelected(true);
+        } else {
+            doNotRunSimulationsRadioButton.setSelected(true);
+        }
+        numberOfBatchRunsTextField.setText(Integer.toString(SimulationSettings.numBatchRuns));
+        numberOfIterationsTextField.setText(Integer.toString(SimulationSettings.numIterations));
+
+        editParameter1Button.addActionListener(new ActionListener() {
+
+            public void actionPerformed(ActionEvent e) {
+
+                new JDialogEditParameter1();
+                drawParameterTables();
+            }
+        });
+
+        if (SimulationSettings.DO_COMPRESS_KEEP_ORIGINAL == 1) {
+            compressAndKeepOrigRadioButton.setSelected(true);
+        } else if (SimulationSettings.DO_COMPRESS_REMOVE_ORIGINAL == 1) {
+            compressAndRemoveOrigRadioButton.setSelected(true);
+        } else if (SimulationSettings.DO_REMOVE_DB == 1) {
+            removeDecompressedRadioButton.setSelected(true);
+        } else if (SimulationSettings.DO_DECOMPRESS == 1) {
+            decompressRadioButton.setSelected(true);
+        } else {
+            notCompressRadioButton.setSelected(true);
+        }
+
+        if (SimulationSettings.saveAllAgentVariables) {
+            yesWriteAllDatabaseRadioButton.setSelected(true);
+        } else {
+            noWriteAllDatabaseRadioButton.setSelected(true);
         }
 
     }
 
     void oldFillMenu_FromMultiGUIConstructor() {
         //menuBar = new JMenuBar();
-        jMenu1 = new JMenu("Experiment");
+//        JMenu menuExperiment = new JMenu("Experiment");
+        JMenu menu1 = new JMenu("Experiment");
         JMenuItem loadExperiment, newExperiment, saveExperiment, saveExperimentAs, exitGUI;
         JMenuItem runBatchExperiments;
         JMenu menuSettings, setPathes;
-        JMenuItem setPathModelXML, setExecutable, setZeroXMLFile, setPathRScripts;
+        JMenuItem setPathModelXML, setExecutable, setZeroXMLFile, setPathRScripts, setPathXparser;
         JMenu menuImportExport, menuimportPlottingSections, menuimportParameterSections;
         JMenuItem importPlottingSettings, exportPlottingSettings, importParameterSettings, exportParameterSettings;
         JTabbedPane mainTabPane = null;
 
-        menuBar.add(jMenu1);
+        menuBar.add(menu1);
+
+        //menuExperiment = new JMenu("Experiment");
+        //  menuBar.add(jMenu1);
+        // menuBar = new JMenuBar();
+        //menuExperiment = new JMenu("Experiment");
+        //JMenu menuExperiment = jMenu1;
+        menuBar.add(menu1);
 
         newExperiment = new JMenuItem("New");
         loadExperiment = new JMenuItem("Load");
@@ -924,7 +1154,7 @@ public class SimulationSettingsFrame extends javax.swing.JFrame {
 
         exitGUI = new JMenuItem("Exit");
 
-        jMenu1.add(newExperiment);
+        menu1.add(newExperiment);
 
         newExperiment.addActionListener(new ActionListener() {
 
@@ -937,13 +1167,13 @@ public class SimulationSettingsFrame extends javax.swing.JFrame {
                 /*Set up agent list*/
                 //AgentSettings.agents = new ArrayList<Agent>();
                 SimulationSettings.experimentBuilt = false;
-                jButton4.setEnabled(SimulationSettings.experimentBuilt);
+                runExperimentButton.setEnabled(SimulationSettings.experimentBuilt);
 
             }
 
         });
 
-        jMenu1.add(loadExperiment);
+        menu1.add(loadExperiment);
 
         loadExperiment.addActionListener(new ActionListener() {
 
@@ -1003,16 +1233,27 @@ public class SimulationSettingsFrame extends javax.swing.JFrame {
                         settingContainer.doNotCompress.setSelected(true);
                     }
 
+                    if (SimulationSettings.saveAllAgentVariables) {
+                        settingContainer.rbNoStoreAll.setSelected(false);
+                        settingContainer.rbYesStoreAll.setSelected(true);
+                    } else {
+
+                        settingContainer.rbNoStoreAll.setSelected(true);
+                        settingContainer.rbYesStoreAll.setSelected(false);
+
+                    }
+
                 } catch (IOException e1) {
 
                     JOptionPane.showMessageDialog(null, "XML File with saved settings not found. Please enter the settings manually");
                 }
+
             }
 
         });
 
         /*Save Experiment:*/
-        jMenu1.add(saveExperiment);
+        menu1.add(saveExperiment);
 
         saveExperiment.addActionListener(new ActionListener() {
 
@@ -1025,7 +1266,7 @@ public class SimulationSettingsFrame extends javax.swing.JFrame {
         });
 
         /*Save as...Experiment:*/
-        jMenu1.add(saveExperimentAs);
+        menu1.add(saveExperimentAs);
 
         saveExperimentAs.addActionListener(new ActionListener() {
 
@@ -1041,246 +1282,6 @@ public class SimulationSettingsFrame extends javax.swing.JFrame {
             }
 
         });
-
-        runBatchExperiments = new JMenuItem("Run Batch");
-
-        jMenu1.add(runBatchExperiments);
-
-        runBatchExperiments.addActionListener(new ActionListener() {
-
-            public void actionPerformed(ActionEvent evt) {
-
-                new JDialogBatchExperiments();
-
-            }
-
-        });
-
-        jMenu1.add(runBatchExperiments);
-
-        jMenu1.add(exitGUI);
-        exitGUI.addActionListener(new ActionListener() {
-
-            public void actionPerformed(ActionEvent evt) {
-
-                Object text = "Do you want to save the settings before quitting? \n";
-
-                int choice = JOptionPane.showConfirmDialog(null, text, "Exit GUI", JOptionPane.YES_NO_CANCEL_OPTION);
-
-                if (choice == 0) {
-
-                    /*Choice is yes*/
-                    String PathToFile = new String(SimulationSettings.WORKING_DIRECTORY + "/SimParameter.sh");
-
-                    System.out.println(SimulationSettings.WORKING_DIRECTORY);
-                    System.out.println(PathToFile);
-
-                    /*Safe the settings to XML file*/
-                    SaveSettings();
-
-                    setVisible(false);
-                    dispose();
-
-                    System.exit(-1);
-
-                } else if (choice == 1) {
-
-                    /*Choice is no*/
-                    setVisible(false);
-                    dispose();
-
-                    System.out.println("agents:   " + AgentSettings.agents.get(0).agentName);
-
-                    System.exit(-1);
-
-                }
-
-            }
-        });
-
-        menuSettings = new JMenu("Settings");
-        menuBar.add(menuSettings);
-
-        setPathes = new JMenu("Set Pathes");
-
-        setPathModelXML = new JMenuItem("Set Path to Model.xml file");
-        setPathModelXML.setToolTipText("Current path: " + SimulationSettings.EURACE_MODEL_XML);
-        setExecutable = new JMenuItem("Set Model Executable");
-        setExecutable.setToolTipText("Current Executable: " + SimulationSettings.MAIN_EXECUTABLE);
-        setZeroXMLFile = new JMenuItem("Set initial Data File (0.xml)");
-        setZeroXMLFile.setToolTipText("Current initial Data File: " + SimulationSettings.ZERO_XML_FILE);
-        setPathRScripts = new JMenuItem("Set path to R Scripts");
-        setPathRScripts.setToolTipText("Current path to R Scripts: " + SimulationSettings.PATH_TO_RSCRIPTS);
-
-        setPathModelXML.addActionListener(new ActionListener() {
-
-            public void actionPerformed(ActionEvent evt) {
-
-                String pathBefore;
-
-                FileChooserFromMenuList chooseFile = new FileChooserFromMenuList(SimulationSettings.EURACE_MODEL_XML, false, true, "xml", false);
-                chooseFile.openFileChooser();
-
-                pathBefore = SimulationSettings.EURACE_MODEL_XML;
-
-                SimulationSettings.EURACE_MODEL_XML = chooseFile.getDirectoryOrFile();
-                setPathModelXML.setToolTipText("Current path: " + SimulationSettings.EURACE_MODEL_XML);
-
-                if (!pathBefore.equals(SimulationSettings.EURACE_MODEL_XML)) {
-                    /*Set agent list*/
-                    agentList = ReadAgentListFromModelXML();
-                    AgentSettings.agents = new ArrayList<Agent>();
-
-                    PlottingSettings.listOfAgentsVariableInstances = new ArrayList<PlottingSettings.Agent>();
-
-                    /*List of ratio Instances*/
-                    PlottingSettings.listOfRatioInstances = new ArrayList<PlottingSettings.RatioInstance>();
-
-                    /*List of time series*/
-                    PlottingSettings.listOfSingleTimeSeries = new ArrayList<PlottingSettings.SingleTimeSeries>();
-                    PlottingSettings.defaultsSingleTimeSeries = (new PlottingSettings()).new DefaulSingleTimeSeriesSettings();
-
-                    /*List of multiple time series*/
-                    PlottingSettings.listOfMultipleTimeSeries = new ArrayList<PlottingSettings.MultipleTimeSeries>();
-                    PlottingSettings.defaultsMultipleTimeSeries = (new PlottingSettings()).new DefaulMultipleTimeSeriesSettings();
-
-                    /*List of multiple time series*/
-                    PlottingSettings.listOfSingleBandpassFilteredTimeSeries = new ArrayList<PlottingSettings.SingleBandpassFilteredTimeSeries>();
-                    PlottingSettings.defaultsSingleBandpassFilteredTimeSeries = (new PlottingSettings()).new DefaultSettingsSingleBandpassFilteredTimeSeries();
-
-                    /*List of multiple time series*/
-                    PlottingSettings.listOfMultipleBandpassFilteredTimeSeries = new ArrayList<PlottingSettings.MultipleBandpassFilteredTimeSeries>();
-                    PlottingSettings.defaultsMultipleBandpassFilteredTimeSeries = (new PlottingSettings()).new DefaultSettingsMultipleBandpassFilteredTimeSeries();
-
-                    /*List of multiple time series*/
-                    PlottingSettings.listOfHistograms = new ArrayList<PlottingSettings.Histogram>();
-                    PlottingSettings.defaultsHistogram = (new PlottingSettings()).new DefaultSettingsHistogram();
-
-                    /*List of multiple time series*/
-                    PlottingSettings.listOfBoxplots = new ArrayList<PlottingSettings.Boxplots>();
-                    PlottingSettings.defaultsBoxplots = (new PlottingSettings()).new DefaultSettingsBoxplots();
-
-
-                    /*List of multiple time series*/
-                    PlottingSettings.listOfHeatmaps = new ArrayList<PlottingSettings.Heatmaps>();
-                    PlottingSettings.defaultsHeatmaps = (new PlottingSettings()).new DefaultSettingsHeatmaps();
-
-                    /*List of multiple time series*/
-                    PlottingSettings.listOfScatterPlots = new ArrayList<PlottingSettings.ScatterPlots>();
-                    PlottingSettings.defaultsScatterPlots = (new PlottingSettings()).new DefaultSettingsScatterPlots();
-
-                    /*List of multiple time series*/
-                    PlottingSettings.listOfCrossCorrelation = new ArrayList<PlottingSettings.CrossCorrelation>();
-                    PlottingSettings.defaultsCrossCorrelation = (new PlottingSettings()).new DefaultSettingsCrossCorrelation();
-
-                    /*List of multiple time series*/
-                    PlottingSettings.listOfCorrelation = new ArrayList<PlottingSettings.Correlation>();
-                    PlottingSettings.defaultsCorrelation = (new PlottingSettings()).new DefaultSettingsCorrelation();
-
-                    /*List of multiple time series*/
-                    PlottingSettings.listOfHeatmaps2V = new ArrayList<PlottingSettings.Heatmaps2V>();
-                    PlottingSettings.defaultsHeatmaps2V = (new PlottingSettings()).new DefaultSettingsHeatmaps2V();
-
-                    for (int i = 0; i < agentList.size(); i++) {
-
-                        AgentSettings.agents.add(new Agent(agentList.get(i)));
-                        PlottingSettings.Agent temAgent = (new PlottingSettings()).new Agent(agentList.get(i));
-                        PlottingSettings.listOfAgentsVariableInstances.add(temAgent);
-
-                    }
-
-                    /*Read Model parameters*/
-                    ReadModelParameter modelXML = new ReadModelParameter();
-                    modelXML.getFIleListDirectlyFromEuraceModelXML();
-                    ModelParameterSettings.modelParameters = modelXML.GetModelParameterFromModelXMLFiles();
-
-                    plottingContainer = new TabPlotting();
-                    settingContainer = new TabSettings();
-
-                    plottingContainer.validate();
-                    settingContainer.validate();
-
-
-                    /*Add GUI container to Scroll pane*/
-                    settingScrollPane = new JScrollPane(settingContainer);
-                    settingScrollPane.setPreferredSize(new Dimension(800, 1200));
-
-                    plottingScrollPane = new JScrollPane(plottingContainer);
-                    plottingScrollPane.setPreferredSize(new Dimension(800, 1200));
-
-                    /*Add Scroll pane to JFrame*/
-                    //add(guiScrollPane);
-                    mainTabPane.remove(1);
-
-                    mainTabPane.remove(0);
-
-                    mainTabPane.add(settingScrollPane, "Simulation Settings");
-
-                    mainTabPane.add(plottingScrollPane, "Plotting Settings");
-
-                    validate();
-
-                    validate();
-                }
-
-            }
-        });
-
-        setExecutable.addActionListener(new ActionListener() {
-
-            public void actionPerformed(ActionEvent evt) {
-                FileChooserFromMenuList chooseFile;
-
-                if (SimulationSettings.MAIN_EXECUTABLE.equals(".")) {
-                    chooseFile = new FileChooserFromMenuList(SimulationSettings.EURACE_MODEL_XML, false, false, "", false);
-                } else {
-                    chooseFile = new FileChooserFromMenuList(SimulationSettings.MAIN_EXECUTABLE, false, false, "", false);
-                }
-
-                chooseFile.openFileChooser();
-                SimulationSettings.MAIN_EXECUTABLE = chooseFile.getDirectoryOrFile();
-                setExecutable.setToolTipText("Current Executable: " + SimulationSettings.MAIN_EXECUTABLE);
-
-            }
-        });
-
-        setZeroXMLFile.addActionListener(new ActionListener() {
-
-            public void actionPerformed(ActionEvent evt) {
-
-                FileChooserFromMenuList chooseFile;
-
-                if (SimulationSettings.ZERO_XML_FILE.equals("0.xml")) {
-                    chooseFile = new FileChooserFromMenuList(SimulationSettings.EURACE_MODEL_XML, false, true, "xml", false);
-                } else {
-                    chooseFile = new FileChooserFromMenuList(SimulationSettings.ZERO_XML_FILE, false, true, "xml", false);
-                }
-
-                chooseFile.openFileChooser();
-                SimulationSettings.ZERO_XML_FILE = chooseFile.getDirectoryOrFile();
-                setExecutable.setToolTipText("Current Executable: " + SimulationSettings.ZERO_XML_FILE);
-
-            }
-        });
-
-        setPathRScripts.addActionListener(new ActionListener() {
-
-            public void actionPerformed(ActionEvent evt) {
-
-                FileChooserFromMenuList chooseFile = new FileChooserFromMenuList(SimulationSettings.PATH_TO_RSCRIPTS, true, false, "", false);
-                chooseFile.openFileChooser();
-                SimulationSettings.PATH_TO_RSCRIPTS = chooseFile.getDirectoryOrFile();
-                setPathRScripts.setToolTipText("Current pat: " + SimulationSettings.PATH_TO_RSCRIPTS);
-
-            }
-        });
-
-        setPathes.add(setPathModelXML);
-        setPathes.add(setExecutable);
-        setPathes.add(setZeroXMLFile);
-        setPathes.add(setPathRScripts);
-
-        menuSettings.add(setPathes);
 
         /*menu to import and export settings: plotting settings and initial parameters*/
         menuImportExport = new JMenu("Import/Export");
@@ -1513,349 +1514,22 @@ public class SimulationSettingsFrame extends javax.swing.JFrame {
 
                     }
 
-                    /*Check heatmaps*/
-                    for (int i = 0; i < PlottingSettings.listOfHeatmaps.size(); i++) {
+                    plottingContainer.removeAll();
 
-                        for (int j = 0; j < AgentSettings.agents.size(); j++) {
+                    plottingContainer = new TabPlotting();
 
-                            if (PlottingSettings.listOfHeatmaps.get(i).histBelongsTo.equals(AgentSettings.agents.get(j).agentName)) {
+                    plottingContainer.validate();
 
-                                /*Check if variable is there:*/
-                                if (PlottingSettings.listOfHeatmaps.get(i).isVariable) {
+                    plottingScrollPane = new JScrollPane(plottingContainer);
+                    plottingScrollPane.setPreferredSize(new Dimension(800, 1200));
 
-                                    boolean found = false;
+                    /*Add Scroll pane to JFrame*/
+                    //add(guiScrollPane);
+                    mainTabPane.remove(1);
 
-                                    for (int l = 0; l < AgentSettings.agents.get(j).variableList.size(); l++) {
+                    mainTabPane.add(plottingScrollPane, "Plotting Settings");
 
-                                        AgentSettings.agents.get(j).variableList.get(l).isSelectedForHeatmaps = false;
-
-                                        if (PlottingSettings.listOfHeatmaps.get(i).variable.name.equals(AgentSettings.agents.get(j).variableList.get(l).name)) {
-
-                                            AgentSettings.agents.get(j).variableList.get(l).isSelectedForHeatmaps = true;
-                                            found = true;
-                                            break;
-                                        }
-
-                                    }
-
-                                    if (!found) {
-
-                                        PlottingSettings.listOfHeatmaps.remove(i);
-                                        i--;
-
-                                    }
-
-                                } else {
-                                    /*If agent ratio*/
-
-                                    boolean numeratorFound = false;
-                                    boolean denominatorFound = false;
-
-                                    int indFound1, indFound2;
-
-                                    indFound1 = 0;
-                                    indFound2 = 0;
-
-                                    for (int l = 0; l < AgentSettings.agents.get(j).variableList.size(); l++) {
-
-                                        if (PlottingSettings.listOfHeatmaps.get(i).agentRatio.numerator.equals(AgentSettings.agents.get(j).variableList.get(l).name)) {
-                                            numeratorFound = true;
-                                            indFound1 = l;
-                                        } else if (PlottingSettings.listOfHeatmaps.get(i).agentRatio.denominator.equals(AgentSettings.agents.get(j).variableList.get(l).name)) {
-
-                                            denominatorFound = true;
-                                            indFound2 = l;
-
-                                        }
-
-                                    }
-
-                                    /*If either numerator or denominator not found remove agent ratio*/
-                                    if (!numeratorFound || !denominatorFound) {
-
-                                        PlottingSettings.listOfHeatmaps.remove(i);
-                                        i--;
-
-                                    } else {
-
-                                        AgentSettings.agents.get(j).variableList.get(indFound1).isSelectedForHeatmaps = true;
-                                        AgentSettings.agents.get(j).variableList.get(indFound2).isSelectedForHeatmaps = true;
-
-                                    }
-
-                                }
-
-                            }
-
-                        }
-
-                    }
-
-                    /*Check correlation coeff*/
-                    for (int i = 0; i < PlottingSettings.listOfCorrelation.size(); i++) {
-
-                        for (int j = 0; j < AgentSettings.agents.size(); j++) {
-
-                            if (PlottingSettings.listOfCorrelation.get(i).histBelongsTo.equals(AgentSettings.agents.get(j).agentName)) {
-
-                                /*Check if variable is there:*/
-                                boolean found1 = false;
-
-                                for (int l = 0; l < AgentSettings.agents.get(j).variableList.size(); l++) {
-
-                                    AgentSettings.agents.get(j).variableList.get(l).isSelectedForBoxplots = false;
-
-                                    if (PlottingSettings.listOfCorrelation.get(i).variable1.name.equals(AgentSettings.agents.get(j).variableList.get(l).name)) {
-
-                                        AgentSettings.agents.get(j).variableList.get(l).isSelectedForCorrelation = true;
-                                        found1 = true;
-                                        break;
-                                    }
-
-                                }
-
-                                boolean found2 = false;
-
-                                for (int l = 0; l < AgentSettings.agents.get(j).variableList.size(); l++) {
-
-                                    AgentSettings.agents.get(j).variableList.get(l).isSelectedForBoxplots = false;
-
-                                    if (PlottingSettings.listOfCorrelation.get(i).variable2.name.equals(AgentSettings.agents.get(j).variableList.get(l).name)) {
-
-                                        AgentSettings.agents.get(j).variableList.get(l).isSelectedForCorrelation = true;
-                                        found2 = true;
-                                        break;
-                                    }
-
-                                    if (!found1 || !found2) {
-
-                                        PlottingSettings.listOfCorrelation.remove(i);
-                                        i--;
-
-                                    }
-
-                                }
-
-                            }
-
-                        }
-
-                    }
-
-                    /*Check heatmaps 2V*/
-                    for (int i = 0; i < PlottingSettings.listOfHeatmaps2V.size(); i++) {
-
-                        for (int j = 0; j < AgentSettings.agents.size(); j++) {
-
-                            if (PlottingSettings.listOfHeatmaps2V.get(i).histBelongsTo.equals(AgentSettings.agents.get(j).agentName)) {
-
-                                /*Check if variable is there:*/
-                                if (PlottingSettings.listOfHeatmaps2V.get(i).isVariable1) {
-
-                                    boolean found = false;
-
-                                    for (int l = 0; l < AgentSettings.agents.get(j).variableList.size(); l++) {
-
-                                        if (PlottingSettings.listOfHeatmaps2V.get(i).variable1.name.equals(AgentSettings.agents.get(j).variableList.get(l).name)) {
-
-                                            found = true;
-                                            break;
-                                        }
-
-                                    }
-
-                                    if (!found) {
-
-                                        PlottingSettings.listOfHeatmaps2V.remove(i);
-                                        i--;
-                                        break;
-
-                                    }
-
-                                } else {
-                                    /*If agent ratio*/
-
-                                    boolean numeratorFound = false;
-                                    boolean denominatorFound = false;
-
-                                    for (int l = 0; l < AgentSettings.agents.get(j).variableList.size(); l++) {
-
-                                        if (PlottingSettings.listOfHeatmaps2V.get(i).agentRatio1.numerator.equals(AgentSettings.agents.get(j).variableList.get(l).name)) {
-                                            numeratorFound = true;
-                                        } else if (PlottingSettings.listOfHeatmaps2V.get(i).agentRatio1.denominator.equals(AgentSettings.agents.get(j).variableList.get(l).name)) {
-
-                                            denominatorFound = true;
-
-                                        }
-
-                                    }
-
-                                    /*If either numerator or denominator not found remove agent ratio*/
-                                    if (!numeratorFound || !denominatorFound) {
-
-                                        PlottingSettings.listOfHeatmaps2V.remove(i);
-                                        i--;
-                                        break;
-
-                                    }
-
-                                }
-
-                                if (PlottingSettings.listOfHeatmaps2V.get(i).isVariable2) {
-
-                                    boolean found = false;
-
-                                    for (int l = 0; l < AgentSettings.agents.get(j).variableList.size(); l++) {
-
-                                        AgentSettings.agents.get(j).variableList.get(l).isSelectedForHeatmaps2V = false;
-
-                                        if (PlottingSettings.listOfHeatmaps2V.get(i).variable1.name.equals(AgentSettings.agents.get(j).variableList.get(l).name)) {
-
-                                            AgentSettings.agents.get(j).variableList.get(l).isSelectedForHeatmaps2V = true;
-                                            found = true;
-                                            break;
-                                        }
-
-                                    }
-
-                                    if (!found) {
-
-                                        PlottingSettings.listOfHeatmaps2V.remove(i);
-                                        i--;
-                                        break;
-
-                                    }
-
-                                } else {
-                                    /*If agent ratio*/
-
-                                    boolean numeratorFound = false;
-                                    boolean denominatorFound = false;
-
-                                    for (int l = 0; l < AgentSettings.agents.get(j).variableList.size(); l++) {
-
-                                        if (PlottingSettings.listOfHeatmaps2V.get(i).agentRatio2.numerator.equals(AgentSettings.agents.get(j).variableList.get(l).name)) {
-                                            numeratorFound = true;
-                                        } else if (PlottingSettings.listOfHeatmaps2V.get(i).agentRatio2.denominator.equals(AgentSettings.agents.get(j).variableList.get(l).name)) {
-
-                                            denominatorFound = true;
-
-                                        }
-
-                                    }
-
-                                    /*If either numerator or denominator not found remove agent ratio*/
-                                    if (!numeratorFound || !denominatorFound) {
-
-                                        PlottingSettings.listOfHeatmaps2V.remove(i);
-                                        i--;
-                                        break;
-
-                                    }
-
-                                }
-
-                            }
-
-                        }
-
-                    }
-
-                    for (int i = 0; i < AgentSettings.agents.size(); i++) {
-
-                        for (int j = 0; j < AgentSettings.agents.get(i).variableList.size(); j++) {
-
-                            AgentSettings.agents.get(i).variableList.get(j).isSelectedForHeatmaps2V = false;
-
-                        }
-                    }
-
-                    for (int i = 0; i < PlottingSettings.listOfHeatmaps2V.size(); i++) {
-
-                        for (int j = 0; j < AgentSettings.agents.size(); j++) {
-
-                            if (PlottingSettings.listOfHeatmaps2V.get(i).histBelongsTo.equals(AgentSettings.agents.get(j).agentName)) {
-
-                                if (PlottingSettings.listOfHeatmaps2V.get(i).isVariable1) {
-
-                                    for (int k = 0; k < AgentSettings.agents.get(j).variableList.size(); k++) {
-
-                                        if (PlottingSettings.listOfHeatmaps2V.get(i).variable1.name.equals(AgentSettings.agents.get(j).variableList.get(k).name)) {
-
-                                            AgentSettings.agents.get(j).variableList.get(k).isSelectedForHeatmaps2V = true;
-                                            break;
-
-                                        }
-
-                                    }
-
-                                } else {
-
-                                    for (int k = 0; k < AgentSettings.agents.get(j).variableList.size(); k++) {
-
-                                        if (PlottingSettings.listOfHeatmaps2V.get(i).agentRatio1.numerator.name.equals(AgentSettings.agents.get(j).variableList.get(k).name)) {
-
-                                            AgentSettings.agents.get(j).variableList.get(k).isSelectedForHeatmaps2V = true;
-                                            break;
-
-                                        }
-
-                                    }
-
-                                    for (int k = 0; k < AgentSettings.agents.get(j).variableList.size(); k++) {
-
-                                        if (PlottingSettings.listOfHeatmaps2V.get(i).agentRatio1.denominator.name.equals(AgentSettings.agents.get(j).variableList.get(k).name)) {
-
-                                            AgentSettings.agents.get(j).variableList.get(k).isSelectedForHeatmaps2V = true;
-                                            break;
-
-                                        }
-
-                                    }
-                                }
-
-                                if (PlottingSettings.listOfHeatmaps2V.get(i).isVariable2) {
-
-                                    for (int k = 0; k < AgentSettings.agents.get(j).variableList.size(); k++) {
-
-                                        if (PlottingSettings.listOfHeatmaps2V.get(i).variable2.name.equals(AgentSettings.agents.get(j).variableList.get(k).name)) {
-
-                                            AgentSettings.agents.get(j).variableList.get(k).isSelectedForHeatmaps2V = true;
-                                            break;
-
-                                        }
-
-                                    }
-
-                                } else {
-
-                                    for (int k = 0; k < AgentSettings.agents.get(j).variableList.size(); k++) {
-
-                                        if (PlottingSettings.listOfHeatmaps2V.get(i).agentRatio2.numerator.name.equals(AgentSettings.agents.get(j).variableList.get(k).name)) {
-
-                                            AgentSettings.agents.get(j).variableList.get(k).isSelectedForHeatmaps2V = true;
-                                            break;
-
-                                        }
-
-                                    }
-
-                                    for (int k = 0; k < AgentSettings.agents.get(j).variableList.size(); k++) {
-
-                                        if (PlottingSettings.listOfHeatmaps2V.get(i).agentRatio2.denominator.name.equals(AgentSettings.agents.get(j).variableList.get(k).name)) {
-
-                                            AgentSettings.agents.get(j).variableList.get(k).isSelectedForHeatmaps2V = true;
-                                            break;
-
-                                        }
-
-                                    }
-                                }
-
-                            }
-
-                        }
-                    }
+                    validate();
 
                 } catch (Exception ex) {
 
@@ -1963,11 +1637,244 @@ public class SimulationSettingsFrame extends javax.swing.JFrame {
 
         menuImportExport.add(menuimportParameterSections);
 
-        menuSettings.add(menuImportExport);
+        menu1.add(menuImportExport);
 
-        /*menu plotting selection*/
-        setJMenuBar(menuBar);
+        runBatchExperiments = new JMenuItem("Run Batch");
 
+        menu1.add(runBatchExperiments);
+
+        runBatchExperiments.addActionListener(new ActionListener() {
+
+            public void actionPerformed(ActionEvent evt) {
+
+                new JDialogBatchExperiments();
+
+            }
+
+        });
+
+        menu1.add(runBatchExperiments);
+
+        menu1.add(exitGUI);
+        exitGUI.addActionListener(new ActionListener() {
+
+            public void actionPerformed(ActionEvent evt) {
+
+                Object text = "Do you want to save the settings before quitting? \n";
+
+                int choice = JOptionPane.showConfirmDialog(null, text, "Exit GUI", JOptionPane.YES_NO_CANCEL_OPTION);
+
+                if (choice == 0) {
+
+                    /*Choice is yes*/
+                    String PathToFile = new String(SimulationSettings.WORKING_DIRECTORY + "/SimParameter.sh");
+
+                    System.out.println(SimulationSettings.WORKING_DIRECTORY);
+                    System.out.println(PathToFile);
+
+                    /*Safe the settings to XML file*/
+                    SaveSettings();
+
+                    setVisible(false);
+                    dispose();
+
+                    System.exit(-1);
+
+                } else if (choice == 1) {
+
+                    /*Choice is no*/
+                    setVisible(false);
+                    dispose();
+
+                    System.out.println("agents:   " + AgentSettings.agents.get(0).agentName);
+
+                    System.exit(-1);
+
+                }
+
+            }
+        });
+
+        menuSettings = new JMenu("Settings");
+        menuBar.add(menuSettings);
+
+        setPathes = new JMenu("Set Pathes");
+
+        setPathModelXML = new JMenuItem("Set Path to Model.xml file");
+        setPathModelXML.setToolTipText("Current path: " + SimulationSettings.EURACE_MODEL_XML);
+        setExecutable = new JMenuItem("Set Model Executable");
+        setExecutable.setToolTipText("Current Executable: " + SimulationSettings.MAIN_EXECUTABLE);
+        setZeroXMLFile = new JMenuItem("Set initial Data File (0.xml)");
+        setZeroXMLFile.setToolTipText("Current initial Data File: " + SimulationSettings.ZERO_XML_FILE);
+        setPathRScripts = new JMenuItem("Set path to R Scripts");
+        setPathRScripts.setToolTipText("Current path to R Scripts: " + SimulationSettings.PATH_TO_RSCRIPTS);
+        setPathXparser = new JMenuItem("Set path to xparser");
+        setPathXparser.setToolTipText("Current path to xparser: " + SimulationSettings.PATH_TO_XPARSER);
+
+        setPathModelXML.addActionListener(new ActionListener() {
+
+            public void actionPerformed(ActionEvent evt) {
+
+                String pathBefore;
+
+                FileChooserFromMenuList chooseFile = new FileChooserFromMenuList(SimulationSettings.EURACE_MODEL_XML, false, true, "xml", false);
+                chooseFile.openFileChooser();
+
+                pathBefore = SimulationSettings.EURACE_MODEL_XML;
+
+                SimulationSettings.EURACE_MODEL_XML = chooseFile.getDirectoryOrFile();
+                setPathModelXML.setToolTipText("Current path: " + SimulationSettings.EURACE_MODEL_XML);
+
+                if (!pathBefore.equals(SimulationSettings.EURACE_MODEL_XML)) {
+                    /*Set agent list*/
+                    agentList = ReadAgentListFromModelXML();
+                    AgentSettings.agents = new ArrayList<Agent>();
+
+                    PlottingSettings.listOfAgentsVariableInstances = new ArrayList<PlottingSettings.Agent>();
+
+                    /*List of ratio Instances*/
+                    PlottingSettings.listOfRatioInstances = new ArrayList<PlottingSettings.RatioInstance>();
+
+                    /*List of time series*/
+                    PlottingSettings.listOfSingleTimeSeries = new ArrayList<PlottingSettings.SingleTimeSeries>();
+                    PlottingSettings.defaultsSingleTimeSeries = (new PlottingSettings()).new DefaulSingleTimeSeriesSettings();
+
+                    /*List of multiple time series*/
+                    PlottingSettings.listOfMultipleTimeSeries = new ArrayList<PlottingSettings.MultipleTimeSeries>();
+                    PlottingSettings.defaultsMultipleTimeSeries = (new PlottingSettings()).new DefaulMultipleTimeSeriesSettings();
+
+                    /*List of multiple time series*/
+                    PlottingSettings.listOfHistograms = new ArrayList<PlottingSettings.Histogram>();
+                    PlottingSettings.defaultsHistogram = (new PlottingSettings()).new DefaultSettingsHistogram();
+
+                    /*List of multiple time series*/
+                    PlottingSettings.listOfBoxplots = new ArrayList<PlottingSettings.Boxplots>();
+                    PlottingSettings.defaultsBoxplots = (new PlottingSettings()).new DefaultSettingsBoxplots();
+
+
+                    /*List of multiple time series*/
+                    PlottingSettings.listOfHeatmaps = new ArrayList<PlottingSettings.Heatmaps>();
+                    PlottingSettings.defaultsHeatmaps = (new PlottingSettings()).new DefaultSettingsHeatmaps();
+
+                    /*List of multiple time series*/
+                    PlottingSettings.listOfScatterPlots = new ArrayList<PlottingSettings.ScatterPlots>();
+                    PlottingSettings.defaultsScatterPlots = (new PlottingSettings()).new DefaultSettingsScatterPlots();
+
+                    for (int i = 0; i < agentList.size(); i++) {
+
+                        AgentSettings.agents.add(new Agent(agentList.get(i)));
+                        PlottingSettings.Agent temAgent = (new PlottingSettings()).new Agent(agentList.get(i));
+                        PlottingSettings.listOfAgentsVariableInstances.add(temAgent);
+
+                    }
+
+                    /*Read Model parameters*/
+                    ReadModelParameter modelXML = new ReadModelParameter();
+                    modelXML.getFIleListDirectlyFromEuraceModelXML();
+                    ModelParameterSettings.modelParameters = modelXML.GetModelParameterFromModelXMLFiles();
+
+                    plottingContainer = new TabPlotting();
+                    settingContainer = new TabSettings();
+
+                    plottingContainer.validate();
+                    settingContainer.validate();
+
+
+                    /*Add GUI container to Scroll pane*/
+                    settingScrollPane = new JScrollPane(settingContainer);
+                    settingScrollPane.setPreferredSize(new Dimension(800, 1200));
+
+                    plottingScrollPane = new JScrollPane(plottingContainer);
+                    plottingScrollPane.setPreferredSize(new Dimension(800, 1200));
+
+                    /*Add Scroll pane to JFrame*/
+                    //add(guiScrollPane);
+                    mainTabPane.remove(1);
+
+                    mainTabPane.remove(0);
+
+                    mainTabPane.add(settingScrollPane, "Simulation Settings");
+
+                    mainTabPane.add(plottingScrollPane, "Plotting Settings");
+
+                    validate();
+
+                    validate();
+                }
+
+            }
+        });
+
+        setExecutable.addActionListener(new ActionListener() {
+
+            public void actionPerformed(ActionEvent evt) {
+
+                FileChooserFromMenuList chooseFile;
+
+                if (SimulationSettings.MAIN_EXECUTABLE.equals(".")) {
+                    chooseFile = new FileChooserFromMenuList(SimulationSettings.EURACE_MODEL_XML, false, false, "", false);
+                } else {
+                    chooseFile = new FileChooserFromMenuList(SimulationSettings.MAIN_EXECUTABLE, false, false, "", false);
+                }
+
+                chooseFile.openFileChooser();
+                SimulationSettings.MAIN_EXECUTABLE = chooseFile.getDirectoryOrFile();
+                setExecutable.setToolTipText("Current Executable: " + SimulationSettings.MAIN_EXECUTABLE);
+
+            }
+        });
+
+        setZeroXMLFile.addActionListener(new ActionListener() {
+
+            public void actionPerformed(ActionEvent evt) {
+
+                FileChooserFromMenuList chooseFile;
+
+                if (SimulationSettings.ZERO_XML_FILE.equals("0.xml")) {
+                    chooseFile = new FileChooserFromMenuList(SimulationSettings.EURACE_MODEL_XML, false, true, "xml", false);
+                } else {
+                    chooseFile = new FileChooserFromMenuList(SimulationSettings.ZERO_XML_FILE, false, true, "xml", false);
+                }
+
+                chooseFile.openFileChooser();
+                SimulationSettings.ZERO_XML_FILE = chooseFile.getDirectoryOrFile();
+                setExecutable.setToolTipText("Current Executable: " + SimulationSettings.ZERO_XML_FILE);
+
+            }
+        });
+
+        setPathRScripts.addActionListener(new ActionListener() {
+
+            public void actionPerformed(ActionEvent evt) {
+
+                FileChooserFromMenuList chooseFile = new FileChooserFromMenuList(SimulationSettings.PATH_TO_RSCRIPTS, true, false, "", false);
+                chooseFile.openFileChooser();
+                SimulationSettings.PATH_TO_RSCRIPTS = chooseFile.getDirectoryOrFile();
+                setPathRScripts.setToolTipText("Current pat: " + SimulationSettings.PATH_TO_RSCRIPTS);
+
+            }
+        });
+
+        setPathXparser.addActionListener(new ActionListener() {
+
+            public void actionPerformed(ActionEvent evt) {
+
+                FileChooserFromMenuList chooseFile = new FileChooserFromMenuList(SimulationSettings.PATH_TO_XPARSER, false, false, "", false);
+                chooseFile.openFileChooser();
+                SimulationSettings.PATH_TO_XPARSER = chooseFile.getDirectoryOrFile();
+                setPathXparser.setToolTipText("Current path: " + SimulationSettings.PATH_TO_XPARSER);
+
+            }
+        });
+
+        setPathes.add(setPathModelXML);
+        setPathes.add(setExecutable);
+        setPathes.add(setZeroXMLFile);
+        setPathes.add(setPathRScripts);
+        setPathes.add(setPathXparser);
+
+        menuSettings.add(setPathes);
+      
     }
 
     /**
@@ -2006,6 +1913,17 @@ public class SimulationSettingsFrame extends javax.swing.JFrame {
      *
      */
     private void buildExperimentButtonPressed() {
+        SimulationSettings.numProcessors = Integer.parseInt(numberOfProcessorsComboBox.getSelectedItem().toString());
+
+        /*Write shadow model xml file for selected data storage*/
+        if (!SimulationSettings.saveAllAgentVariables) {
+            try {
+                OverwriteFlameXMLCFile overwrite = new OverwriteFlameXMLCFile();
+            } catch (IOException e1) {
+                // TODO Auto-generated catch block
+                e1.printStackTrace();
+            }
+        }
         ShadowModelXML shadowFile = new ShadowModelXML();
 
         shadowFile.setFilterAndWeights();
@@ -2049,35 +1967,6 @@ public class SimulationSettingsFrame extends javax.swing.JFrame {
                     if (!AgentSettings.agents.get(i).variableList.get(j).name.equals("id")) {
                         ShadowModelXML.agents.get(ShadowModelXML.agents.size() - 1).memory.add((new ShadowModelXML()).new variable(AgentSettings.agents.get(i).variableList.get(j).name, AgentSettings.agents.get(i).variableList.get(j).type));
                     }
-                } else if (AgentSettings.agents.get(i).variableList.get(j).isSelectedForHeatmaps) {
-                    if (!found) {
-                        ShadowModelXML.agents.add((new ShadowModelXML()).new xagent(AgentSettings.agents.get(i).agentName));
-                        found = true;
-                        ShadowModelXML.agents.get(ShadowModelXML.agents.size() - 1).memory.add((new ShadowModelXML()).new variable("id", "int"));
-                    }
-                    if (!AgentSettings.agents.get(i).variableList.get(j).name.equals("id")) {
-                        ShadowModelXML.agents.get(ShadowModelXML.agents.size() - 1).memory.add((new ShadowModelXML()).new variable(AgentSettings.agents.get(i).variableList.get(j).name, AgentSettings.agents.get(i).variableList.get(j).type));
-                    }
-                } else if (AgentSettings.agents.get(i).variableList.get(j).isSelectedForHeatmaps2V) {
-                    if (!found) {
-                        ShadowModelXML.agents.add((new ShadowModelXML()).new xagent(AgentSettings.agents.get(i).agentName));
-                        found = true;
-                        ShadowModelXML.agents.get(ShadowModelXML.agents.size() - 1).memory.add((new ShadowModelXML()).new variable("id", "int"));
-                    }
-                    if (!AgentSettings.agents.get(i).variableList.get(j).name.equals("id")) {
-                        ShadowModelXML.agents.get(ShadowModelXML.agents.size() - 1).memory.add((new ShadowModelXML()).new variable(AgentSettings.agents.get(i).variableList.get(j).name, AgentSettings.agents.get(i).variableList.get(j).type));
-                    }
-                } else if (AgentSettings.agents.get(i).variableList.get(j).isSelectedForCorrelation) {
-                    if (!found) {
-                        ShadowModelXML.agents.add((new ShadowModelXML()).new xagent(AgentSettings.agents.get(i).agentName));
-                        found = true;
-                        ShadowModelXML.agents.get(ShadowModelXML.agents.size() - 1).memory.add((new ShadowModelXML()).new variable("id", "int"));
-                    }
-
-                    if (!AgentSettings.agents.get(i).variableList.get(j).name.equals("id")) {
-                        ShadowModelXML.agents.get(ShadowModelXML.agents.size() - 1).memory.add((new ShadowModelXML()).new variable(AgentSettings.agents.get(i).variableList.get(j).name, AgentSettings.agents.get(i).variableList.get(j).type));
-                    }
-
                 } else if (AgentSettings.agents.get(i).variableList.get(j).isSelectedFilter) {
                     if (!found) {
                         ShadowModelXML.agents.add((new ShadowModelXML()).new xagent(AgentSettings.agents.get(i).agentName));
@@ -2140,26 +2029,13 @@ public class SimulationSettingsFrame extends javax.swing.JFrame {
         rInterface.writeHeatmapsTXTFile();
         rInterface.writeScatterTXTFile();
 
-        rInterface.writeCrossCorrelationTXTFile();
-        rInterface.writeCorrelationTXTFile();
-        rInterface.writeHeatmaps2VTXTFile();
-        rInterface.writeBandpassFilterTXTFile();
-
         rInterface.writeConfigureFile();
 
         AuxFunctions.copyfile(SimulationSettings.WORKING_DIRECTORY + "/variables.txt", SimulationSettings.PATH_TO_RSCRIPTS + "/Data_Files/variables.txt");
         AuxFunctions.copyfile(SimulationSettings.WORKING_DIRECTORY + "/time_series_data.txt", SimulationSettings.PATH_TO_RSCRIPTS + "/Data_Files/time_series_data.txt");
         AuxFunctions.copyfile(SimulationSettings.WORKING_DIRECTORY + "/multiple_time_series_data.txt", SimulationSettings.PATH_TO_RSCRIPTS + "/Data_Files/multiple_time_series_data.txt");
-        AuxFunctions.copyfile(SimulationSettings.WORKING_DIRECTORY + "/growth_rate_data.txt", SimulationSettings.PATH_TO_RSCRIPTS + "/Data_Files/growth_rate_data.txt");
-        AuxFunctions.copyfile(SimulationSettings.WORKING_DIRECTORY + "/ratio_data.txt", SimulationSettings.PATH_TO_RSCRIPTS + "/Data_Files/ratio_data.txt");
         AuxFunctions.copyfile(SimulationSettings.WORKING_DIRECTORY + "/boxplot_data.txt", SimulationSettings.PATH_TO_RSCRIPTS + "/Data_Files/boxplot_data.txt");
         AuxFunctions.copyfile(SimulationSettings.WORKING_DIRECTORY + "/histogram_data.txt", SimulationSettings.PATH_TO_RSCRIPTS + "/Data_Files/histogram_data.txt");
-        AuxFunctions.copyfile(SimulationSettings.WORKING_DIRECTORY + "/heat_maps_data.txt", SimulationSettings.PATH_TO_RSCRIPTS + "/Data_Files/heat_maps_data.txt");
-        AuxFunctions.copyfile(SimulationSettings.WORKING_DIRECTORY + "/scatter_data.txt", SimulationSettings.PATH_TO_RSCRIPTS + "/Data_Files/scatter_data.txt");
-        AuxFunctions.copyfile(SimulationSettings.WORKING_DIRECTORY + "/bandpass_filter_data.txt", SimulationSettings.PATH_TO_RSCRIPTS + "/Data_Files/bandpass_filter_data.txt");
-        AuxFunctions.copyfile(SimulationSettings.WORKING_DIRECTORY + "/cross_correlation_function_data.txt", SimulationSettings.PATH_TO_RSCRIPTS + "/Data_Files/cross_correlation_function.txt");
-        AuxFunctions.copyfile(SimulationSettings.WORKING_DIRECTORY + "/correlation_distribution_data.txt", SimulationSettings.PATH_TO_RSCRIPTS + "/Data_Files/correlation_distribution_data.txt");
-        AuxFunctions.copyfile(SimulationSettings.WORKING_DIRECTORY + "/heat_maps_data_2V.txt", SimulationSettings.PATH_TO_RSCRIPTS + "/Data_Files/heat_maps_data_2V.txt");
 
         AuxFunctions.copyfile(SimulationSettings.WORKING_DIRECTORY + "/Configure.r", SimulationSettings.PATH_TO_RSCRIPTS + "/Configure.r");
 
@@ -2206,7 +2082,7 @@ public class SimulationSettingsFrame extends javax.swing.JFrame {
         //If one parameters is selected:
         // here the reference to settingContainer is replaced with reference to jRadioButton4:
         // if (settingContainer.parameterVariationOnePars.isSelected()) {
-        if (jRadioButton4.isSelected()) {
+        if (parameterVariationOneParameterRadioButton.isSelected()) {
             dict.put("<NUM_PARS>", "1");
         } else {
             dict.put("<NUM_PARS>", "0");
@@ -2256,7 +2132,7 @@ public class SimulationSettingsFrame extends javax.swing.JFrame {
          */
 
 //        if (settingContainer.parameterVariationOnePars.isSelected()) {
-        if (jRadioButton4.isSelected()) {
+        if (parameterVariationOneParameterRadioButton.isSelected()) {
             //If one parameters is selected:	
             //Check if settings are correct, otherwise return warning message/
             try {
@@ -2296,7 +2172,7 @@ public class SimulationSettingsFrame extends javax.swing.JFrame {
         WriteEnvironmentXMLFile environmentXMLFILE = new WriteEnvironmentXMLFile(SimulationSettings.WORKING_DIRECTORY);
         environmentXMLFILE.writeParametersToFile(ModelParameterSettings.modelParameters);
         SimulationSettings.experimentBuilt = true;
-        jButton4.setEnabled(SimulationSettings.experimentBuilt);
+        runExperimentButton.setEnabled(SimulationSettings.experimentBuilt);
     }
 
     void LoadSettings(String file) {
@@ -2572,21 +2448,25 @@ public class SimulationSettingsFrame extends javax.swing.JFrame {
         //AgentTableModel tabAgentsModel;
         tabAgentsModel = new AgentTableModel(colHeaders, AgentSettings.agents);
 
-        jTable1.setModel(tabAgentsModel);
+        wrapDrawStoreOptionTable(jTable1, tabAgentsModel, colHeaders);
 
+//        DrawStoreOptionTable tabAgents = new DrawStoreOptionTable(tabAgentsModel, colHeaders);
+        // jTable1=new DrawStoreOptionTable(tabAgentsModel, colHeaders);
+//        jTable1.setModel(tabAgentsModel);
+        //      jScrollPane1.add(tabAgents);
     }
 
     void drawAgentTable() {
 
-        try {
-
-            lcRightPanel.remove(listScrollAgentTable);
-            lcRightPanel.validate();
-        } catch (Exception e) {
-
-            System.out.println();
-
-        }
+//        try {
+//
+//            lcRightPanel.remove(listScrollAgentTable);
+//            lcRightPanel.validate();
+//        } catch (Exception e) {
+//
+//            System.out.println();
+//
+//        }
         String[] colHeaders = {"Agent", "Record", "Period", "Phase"};
         tabAgentsModel = new AgentTableModel(colHeaders, AgentSettings.agents);
         DrawStoreOptionTable tabAgents = new DrawStoreOptionTable(tabAgentsModel, colHeaders);
@@ -2649,68 +2529,390 @@ public class SimulationSettingsFrame extends javax.swing.JFrame {
                 }
             }
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(SimulationSettingsFrame.class
+            java.util.logging.Logger.getLogger(EditableGui.class
                     .getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(SimulationSettingsFrame.class
+            java.util.logging.Logger.getLogger(EditableGui.class
                     .getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(SimulationSettingsFrame.class
+            java.util.logging.Logger.getLogger(EditableGui.class
                     .getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(SimulationSettingsFrame.class
+            java.util.logging.Logger.getLogger(EditableGui.class
                     .getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
+        //</editor-fold>
         //</editor-fold>
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new SimulationSettingsFrame().setVisible(true);
+                new EditableGui().setVisible(true);
             }
         });
     }
 
+    void paneSettingMiddleAreaRadioButtonUpdated() {
+        ArrayList<SimulationSettings.Value> emptyArrayList = new ArrayList<SimulationSettings.Value>();
+        ParameterTableModel tabModel;
+        TableColumn col;
+
+        if (runOnlyOneBatchRadioButton.isSelected()) {
+
+            SimulationSettings.numParameters = 0;
+
+            editParameter1Button.setEnabled(false);
+
+//            rightPanel.remove(listScroll);
+            //          rightPanel.validate();
+            tabModel = new ParameterTableModel("", emptyArrayList, false);
+            jTable2.setModel(tabModel);// = new JTable(tabModel);
+            jTable2.getColumnModel().getColumn(0).setHeaderValue("");
+            //listScroll = new JScrollPane(table);
+            //listScroll.setPreferredSize(new Dimension(130, 150));
+//            rp.gridx = 0;
+//            rp.gridy = 1;
+            // rightPanel.add(listScroll, rp);
+
+            System.out.println("justBatchRuns.isSelected()");
+
+//            rightPanel.validate();
+        } else if (parameterVariationOneParameterRadioButton.isSelected()) {
+
+            SimulationSettings.numParameters = 1;
+
+//            rightPanel.remove(listScroll);
+//
+//            rightPanel.validate();
+            tabModel = new ParameterTableModel(SimulationSettings.PARAMETER_1.name, SimulationSettings.PARAMETER_1.values, true);
+            jTable2.setModel(tabModel);
+            //table = new JTable(tabModel);
+            jTable2.getColumnModel().getColumn(0).setHeaderValue(SimulationSettings.PARAMETER_1.name);
+//            listScroll = new JScrollPane(table);
+//            listScroll.setPreferredSize(new Dimension(130, 150));
+//            rp.gridx = 0;
+//            rp.gridy = 1;
+//            rightPanel.add(listScroll, rp);
+
+            col = jTable2.getColumnModel().getColumn(0);
+            col.setCellEditor(new CellEditor());
+            col.getCellEditor().addCellEditorListener(new EditorListener() {
+
+                public void editingStopped(ChangeEvent e) {
+
+                    /*If Textfield is empty remove this row!*/
+                    if (col.getCellEditor().getCellEditorValue().toString().equals("") && tabModel.getRowCount() > 1) {
+                        tabModel.delRow(((CellEditor) col.getCellEditor()).getRow());
+
+                    } else if (col.getCellEditor().getCellEditorValue().toString().equals("") && tabModel.getRowCount() <= 1) {
+                        //Do noting
+                    } else {
+                        if (SimulationSettings.PARAMETER_1.type.equals("int")) {
+                            try {
+
+                                Integer.parseInt(col.getCellEditor().getCellEditorValue().toString());
+                                tabModel.setValueAt(col.getCellEditor().getCellEditorValue().toString(), ((CellEditor) col.getCellEditor()).getRow(), 0);
+                                tabModel.updatetable();
+
+                            } catch (Exception ex) {
+                                JOptionPane.showMessageDialog(null, "Parameter must be an integer!");
+
+                            }
+
+                        } else {
+                            try {
+                                Double.parseDouble(col.getCellEditor().getCellEditorValue().toString());
+                                tabModel.setValueAt(col.getCellEditor().getCellEditorValue().toString(), ((CellEditor) col.getCellEditor()).getRow(), 0);
+                                tabModel.updatetable();
+
+                            } catch (Exception ex) {
+                                JOptionPane.showMessageDialog(null, "Parameter must be a numeric expression!");
+
+                            }
+
+                        }
+
+                    }
+
+                }
+
+                public void editingCanceled(ChangeEvent e) {
+                    System.out.println("Editing of a cell has been canceled.");
+                }
+
+            });
+
+            System.out.println("parameterVariationOnePars.isSelected()");
+//            rightPanel.validate();
+
+            editParameter1Button.setEnabled(true);
+
+        }
+
+    }
+
+    void drawParameterTables() {
+        ParameterTableModel tabModel;
+        TableColumn col;
+        try {
+//    	rightPanel.remove(listScroll);
+//    	
+//    	rightPanel.validate();
+        } catch (NullPointerException ex) {
+
+            System.out.println("Start drawing parameter table on Simulation settings pane");
+
+        }
+
+        if (SimulationSettings.numParameters == 1) {
+
+            parameterVariationOneParameterRadioButton.setSelected(true);
+
+            runOnlyOneBatchRadioButton.setSelected(false);
+
+        } else {
+
+            runOnlyOneBatchRadioButton.setSelected(true);
+
+            parameterVariationOneParameterRadioButton.setSelected(false);
+
+        }
+
+        if (parameterVariationOneParameterRadioButton.isSelected()) {
+            tabModel = new ParameterTableModel(SimulationSettings.PARAMETER_1.name, SimulationSettings.PARAMETER_1.values, true);
+            jTable2.setModel(tabModel);
+            //table = new JTable(tabModel);
+            jTable2.getColumnModel().getColumn(0).setHeaderValue(SimulationSettings.PARAMETER_1.name);
+
+            System.out.println("SimulationSettings.PARAMETER_1.name   " + SimulationSettings.PARAMETER_1.name);
+
+            col = jTable2.getColumnModel().getColumn(0);
+
+            col.setCellEditor(new CellEditor());
+
+            editParameter1Button.setEnabled(true);
+
+        } else {
+
+            editParameter1Button.setEnabled(false);
+
+        }
+
+        //listScroll = new JScrollPane(table);
+//        listScroll.setPreferredSize(new Dimension(130, 150));
+//        rp.gridx = 0;
+//        rp.gridy = 1;
+//        rightPanel.add(listScroll, rp);
+//
+//        rightPanel.validate();
+//
+//        /*Add to panel upperCenterArea*/
+//        d.gridx = 1;
+//        d.gridy = 0;
+//        add(rightPanel, d);
+    }
+
+    void compressionRadioButtonModified() {
+
+        if (compressAndKeepOrigRadioButton.isSelected()) {
+            SimulationSettings.DO_COMPRESS_KEEP_ORIGINAL = 1;
+            SimulationSettings.DO_COMPRESS_REMOVE_ORIGINAL = 0;
+            SimulationSettings.DO_REMOVE_DB = 0;
+            SimulationSettings.DO_DECOMPRESS = 0;
+
+        } else if (compressAndRemoveOrigRadioButton.isSelected()) {
+
+            SimulationSettings.DO_COMPRESS_KEEP_ORIGINAL = 0;
+            SimulationSettings.DO_COMPRESS_REMOVE_ORIGINAL = 1;
+            SimulationSettings.DO_REMOVE_DB = 0;
+            SimulationSettings.DO_DECOMPRESS = 0;
+
+        } else if (notCompressRadioButton.isSelected()) {
+
+            SimulationSettings.DO_COMPRESS_KEEP_ORIGINAL = 0;
+            SimulationSettings.DO_COMPRESS_REMOVE_ORIGINAL = 0;
+            SimulationSettings.DO_REMOVE_DB = 0;
+            SimulationSettings.DO_DECOMPRESS = 0;
+        } else if (compressAndRemoveOrigRadioButton.isSelected()) {
+
+            SimulationSettings.DO_COMPRESS_KEEP_ORIGINAL = 0;
+            SimulationSettings.DO_COMPRESS_REMOVE_ORIGINAL = 0;
+            SimulationSettings.DO_REMOVE_DB = 1;
+            SimulationSettings.DO_DECOMPRESS = 0;
+
+        } else if (decompressRadioButton.isSelected()) {
+
+            SimulationSettings.DO_COMPRESS_KEEP_ORIGINAL = 0;
+            SimulationSettings.DO_COMPRESS_REMOVE_ORIGINAL = 0;
+            SimulationSettings.DO_REMOVE_DB = 0;
+            SimulationSettings.DO_DECOMPRESS = 1;
+
+        }
+        simulationSettingsTestLabel.setText("compression changed");
+
+    }
+
+    void wrapDrawStoreOptionTable(JTable myTable, AgentTableModel tableMod, String[] colHeaders) {
+        AgentTableModel tableModel = tableMod;
+        myTable.setModel(tableModel);
+        TableColumn col_2, col_3, col_4;
+
+        try {
+
+            for (int i = 0; i < 4; i++) {
+
+                System.out.println(colHeaders[i]);
+
+                myTable.getColumnModel().getColumn(i).setHeaderValue(colHeaders[i]);
+                System.out.println(colHeaders[i]);
+            }
+
+            /*Set Column No 2: JCheckbox for setting whether the agent should be recorded*/
+            col_2 = myTable.getColumnModel().getColumn(1);
+
+            final JCheckBox check = new JCheckBox();
+
+            col_2.setCellEditor(new JCheckBoxCellEditor(check));
+            col_2.getCellEditor().getClass();
+
+            col_2.getCellEditor().addCellEditorListener(new EditorListener() {
+
+                public void editingStopped(ChangeEvent e) {
+
+                    if (col_2.getCellEditor().getCellEditorValue().equals(true)) {
+                        /*Set the check box*/
+                        tableModel.changeValueAt("true", ((JCheckBoxCellEditor) col_2.getCellEditor()).getRow(), 1);
+
+                        if (((JCheckBoxCellEditor) col_2.getCellEditor()).getRow() < AgentSettings.agents.size()) {
+
+                            AgentSettings.agents.get(((JCheckBoxCellEditor) col_2.getCellEditor()).getRow()).dataStorageSettings.setSelected(true);
+
+                        } else {
+                            SimulationSettings.SNAPSHOTS = true;
+                        }
+
+                        tableModel.updatetable();
+
+                    } else {
+                        /*Set the check box*/
+                        tableModel.changeValueAt("false", ((JCheckBoxCellEditor) col_2.getCellEditor()).getRow(), 1);
+                        if (((JCheckBoxCellEditor) col_2.getCellEditor()).getRow() < AgentSettings.agents.size()) {
+
+                            AgentSettings.agents.get(((JCheckBoxCellEditor) col_2.getCellEditor()).getRow()).dataStorageSettings.setSelected(false);
+
+                        } else {
+
+                            SimulationSettings.SNAPSHOTS = false;
+                        }
+                        tableModel.updatetable();
+
+                    }
+
+                }
+
+            });
+
+            col_2.setCellRenderer(new DefaultTableCellRenderer() {
+                public Component getTableCellRendererComponent(JTable table,
+                        Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+                    check.setSelected(((Boolean) value).booleanValue());
+                    return check;
+                }
+
+            });
+
+            /*Here we set the column no 3:*/
+            col_3 = myTable.getColumnModel().getColumn(2);
+            col_3.setCellEditor(new CellEditor());
+
+            col_3.getCellEditor().addCellEditorListener(new EditorListener() {
+
+                public void editingStopped(ChangeEvent e) {
+
+                    System.out.println("A cell has been edited.");
+
+                    try {
+                        System.out.println("Out: " + col_3.getCellEditor().getCellEditorValue());
+                        /*Set the table cell*/
+                        Integer.parseInt(col_3.getCellEditor().getCellEditorValue().toString());
+                        tableModel.changeValueAt(col_3.getCellEditor().getCellEditorValue().toString(), ((CellEditor) col_3.getCellEditor()).getRow(), 2);
+                        tableModel.updatetable();
+
+                        /*Update the memory variable*/
+                        if (((CellEditor) col_3.getCellEditor()).getRow() < AgentSettings.agents.size()) {
+                            AgentSettings.agents.get(((CellEditor) col_3.getCellEditor()).getRow()).dataStorageSettings.period = col_3.getCellEditor().getCellEditorValue().toString();
+                        } else {
+                            SimulationSettings.SNAPSHOTS_FREQUENCY = Integer.parseInt(col_3.getCellEditor().getCellEditorValue().toString());
+                        }
+                    } catch (Exception ex) {
+                        JOptionPane.showMessageDialog(null, "Parameter must be an integer!");
+
+                    }
+
+                }
+
+            });
+
+            /*Here we set the column no 3:*/
+            col_4 = myTable.getColumnModel().getColumn(3);
+            col_4.setCellEditor(new CellEditor());
+
+            col_4.getCellEditor().addCellEditorListener(new EditorListener() {
+
+                public void editingStopped(ChangeEvent e) {
+
+                    System.out.println("A cell has been edited.");
+
+                    try {
+                        System.out.println("Out: " + col_4.getCellEditor().getCellEditorValue());
+                        /*Set the table cell*/
+                        Integer.parseInt(col_4.getCellEditor().getCellEditorValue().toString());
+                        tableModel.changeValueAt(col_4.getCellEditor().getCellEditorValue().toString(), ((CellEditor) col_4.getCellEditor()).getRow(), 3);
+                        tableModel.updatetable();
+
+                        /*Update the memory variable*/
+                        AgentSettings.agents.get(((CellEditor) col_4.getCellEditor()).getRow()).dataStorageSettings.phase = col_4.getCellEditor().getCellEditorValue().toString();
+
+                    } catch (Exception ex) {
+                        JOptionPane.showMessageDialog(null, "Parameter must be an integer!");
+
+                    }
+
+                }
+
+            });
+
+            tableModel.updatetable();
+
+        } catch (Exception ex) {
+
+            System.out.println("read storage option settings: " + ex);
+        }
+    }
+
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JLabel TestLabel;
     private javax.swing.JCheckBox addLegendCheckboxNew;
     private javax.swing.JCheckBox batchRunCheckBoxNew;
     private javax.swing.ButtonGroup buttonGroup1;
     private javax.swing.ButtonGroup buttonGroup2;
     private javax.swing.ButtonGroup buttonGroup3;
+    private javax.swing.ButtonGroup buttonGroup4;
+    private javax.swing.JButton changeParameterSetupButton;
     private javax.swing.JCheckBox coloredPlotsCheckboxNew;
+    private javax.swing.JRadioButton compressAndKeepOrigRadioButton;
+    private javax.swing.JRadioButton compressAndRemoveOrigRadioButton;
+    private javax.swing.JRadioButton decompressRadioButton;
+    private javax.swing.JRadioButton doNotRunSimulationsRadioButton;
+    private javax.swing.JButton editParameter1Button;
     private javax.swing.JComboBox fileTypePlotsComboBox;
-    private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;
-    private javax.swing.JButton jButton4;
-    private javax.swing.JComboBox jComboBox1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
-    private javax.swing.JMenu jMenu1;
-    private javax.swing.JMenu jMenu2;
-    private javax.swing.JMenu jMenu3;
-    private javax.swing.JMenu jMenu4;
-    private javax.swing.JMenu jMenu5;
-    private javax.swing.JMenu jMenu6;
-    private javax.swing.JMenuItem jMenuItem1;
-    private javax.swing.JMenuItem jMenuItem10;
-    private javax.swing.JMenuItem jMenuItem11;
-    private javax.swing.JMenuItem jMenuItem12;
-    private javax.swing.JMenuItem jMenuItem13;
-    private javax.swing.JMenuItem jMenuItem14;
-    private javax.swing.JMenuItem jMenuItem2;
-    private javax.swing.JMenuItem jMenuItem3;
-    private javax.swing.JMenuItem jMenuItem4;
-    private javax.swing.JMenuItem jMenuItem5;
-    private javax.swing.JMenuItem jMenuItem6;
-    private javax.swing.JMenuItem jMenuItem7;
-    private javax.swing.JMenuItem jMenuItem8;
-    private javax.swing.JMenuItem jMenuItem9;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
@@ -2718,28 +2920,30 @@ public class SimulationSettingsFrame extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel5;
     private javax.swing.JPanel jPanel6;
     private javax.swing.JPanel jPanel7;
-    private javax.swing.JRadioButton jRadioButton1;
-    private javax.swing.JRadioButton jRadioButton10;
-    private javax.swing.JRadioButton jRadioButton11;
-    private javax.swing.JRadioButton jRadioButton2;
-    private javax.swing.JRadioButton jRadioButton3;
-    private javax.swing.JRadioButton jRadioButton4;
-    private javax.swing.JRadioButton jRadioButton5;
-    private javax.swing.JRadioButton jRadioButton6;
-    private javax.swing.JRadioButton jRadioButton7;
-    private javax.swing.JRadioButton jRadioButton8;
-    private javax.swing.JRadioButton jRadioButton9;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JScrollPane jScrollPane3;
+    private javax.swing.JScrollPane jScrollPane4;
+    private javax.swing.JScrollPane jScrollPane5;
     private javax.swing.JTabbedPane jTabbedPane2;
     private javax.swing.JTabbedPane jTabbedPane3;
     private javax.swing.JTable jTable1;
-    private javax.swing.JTextArea jTextArea1;
-    private javax.swing.JTextField jTextField1;
-    private javax.swing.JTextField jTextField2;
+    private javax.swing.JTable jTable2;
     private javax.swing.JMenuBar menuBar;
+    private javax.swing.JRadioButton noWriteAllDatabaseRadioButton;
+    private javax.swing.JRadioButton notCompressRadioButton;
+    private javax.swing.JTextField numberOfBatchRunsTextField;
+    private javax.swing.JTextField numberOfIterationsTextField;
+    private javax.swing.JComboBox numberOfProcessorsComboBox;
     private javax.swing.JCheckBox parameterAnalysisCheckBoxNew;
+    private javax.swing.JRadioButton parameterVariationOneParameterRadioButton;
+    private javax.swing.JRadioButton removeDecompressedRadioButton;
+    private javax.swing.JButton runExperimentButton;
+    private javax.swing.JRadioButton runOnlyOneBatchRadioButton;
+    private javax.swing.JRadioButton runSimulationsRadioButton;
+    private javax.swing.JLabel simulationSettingsTestLabel;
     private javax.swing.JCheckBox singleRunAnalysisCheckboxNew;
+    private javax.swing.JLabel testLabelPlotting;
     private javax.swing.JTextField transitionPhaseTextFieldNew;
+    private javax.swing.JRadioButton yesWriteAllDatabaseRadioButton;
     // End of variables declaration//GEN-END:variables
 }

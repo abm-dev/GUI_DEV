@@ -1,0 +1,5 @@
+Name 	 LowerBound 	 upperBound 	 tMin 	 tMax
+total_mean_wage	No	No	1	5000	
+production_costs	No	No	1	5000	
+revenue_per_day	No	No	1	5000	
+revenue_per_day_1	No	No	1	5000	

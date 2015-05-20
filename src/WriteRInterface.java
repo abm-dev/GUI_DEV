@@ -1,3 +1,15 @@
+/***   Simulation GUI v0.99
+   Copyright (C) 2014 Gregor Boehl, Sander van der Hoog, Herbert Dawid, Simon Gemkow, Philipp Harting
+
+   This program is free software: you can redistribute it and/or modify
+   it under the terms of the Open Database License (ODbL 1.0) as published by
+   the Open Data Commons, see <http://opendatacommons.org/licenses/odbl/>.
+   This program is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+*/
+
+
 import java.io.BufferedWriter;
 import java.io.FileOutputStream;
 import java.io.OutputStreamWriter;
@@ -54,8 +66,7 @@ public class WriteRInterface {
 			mergeHeatmapsList();
 			mergeHistogramList();
 			mergeBoxplotList();
-			mergeCorrelationListList();
-			mergeHeatmaps2VList();
+	
 		
 		bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(SimulationSettings.WORKING_DIRECTORY+"/variables.txt",false)));
 		
@@ -744,309 +755,6 @@ public void writeMultipleTimeSeriesTXTFile(){
 
 
 
-public void writeBandpassFilterTXTFile(){
-		
-		
-		try{
-		
-		bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(SimulationSettings.WORKING_DIRECTORY+"/bandpass_filter_data.txt",false)));
-		
-		
-		bw.append("Variable \t PV \t Cor \t Log \t Aggreg \t Low \t high \t NFix \t Drift \t Number \t	lowerBound \t upperBound \t tmin \t tmax \t Plot_Name_and_Y_axis");
-		bw.newLine();
-		
-		
-		for(int i=0; i< PlottingSettings.listOfSingleBandpassFilteredTimeSeries.size();i++)
-		{
-			
-			bandpass_filter = true;
-			
-			bw.append( PlottingSettings.listOfSingleBandpassFilteredTimeSeries.get(i).instanceName);
-			bw.append("\t");
-			
-			bw.append("1");
-			bw.append("\t");
-			
-			if(PlottingSettings.listOfSingleBandpassFilteredTimeSeries.get(i).correlation)
-				bw.append("Yes");
-			else
-				bw.append("No");
-		
-			bw.append("\t");
-			
-			if(PlottingSettings.listOfSingleBandpassFilteredTimeSeries.get(i).logarithmic)
-				bw.append("Yes");
-			else
-				bw.append("No");
-		
-			bw.append("\t");
-			
-			
-			bw.append( PlottingSettings.listOfSingleBandpassFilteredTimeSeries.get(i).aggregation.toLowerCase());
-			bw.append("\t");
-			
-			bw.append( Integer.toString(PlottingSettings.listOfSingleBandpassFilteredTimeSeries.get(i).low));
-			bw.append("\t");
-			
-			bw.append( Integer.toString(PlottingSettings.listOfSingleBandpassFilteredTimeSeries.get(i).high));
-			bw.append("\t");
-			
-			bw.append( Integer.toString(PlottingSettings.listOfSingleBandpassFilteredTimeSeries.get(i).Nfix));
-			bw.append("\t");
-			
-			if(PlottingSettings.listOfSingleBandpassFilteredTimeSeries.get(i).drift)
-				bw.append("TRUE");
-			else
-				bw.append("FALSE");
-			
-			bw.append("\t");
-			
-			bw.append("1");
-			bw.append("\t");
-			
-			if(PlottingSettings.listOfSingleBandpassFilteredTimeSeries.get(i).lowerBoundEnabled)
-				bw.append( Double.toString(PlottingSettings.listOfSingleBandpassFilteredTimeSeries.get(i).lowerBound));
-			else
-				bw.append("No");
-			bw.append("\t");
-			
-			if(PlottingSettings.listOfSingleBandpassFilteredTimeSeries.get(i).upperBoundEnabled)
-				bw.append( Double.toString(PlottingSettings.listOfSingleBandpassFilteredTimeSeries.get(i).upperBound));
-			else
-				bw.append("No");
-			bw.append("\t");
-			
-			
-			
-			bw.append( Integer.toString(PlottingSettings.listOfSingleBandpassFilteredTimeSeries.get(i).tmin));
-			bw.append("\t");
-			
-			bw.append( Integer.toString(PlottingSettings.listOfSingleBandpassFilteredTimeSeries.get(i).tmax));
-			bw.append("\t");
-			
-			
-			
-			bw.newLine();
-			
-		}
-		
-		
-		for(int i=0; i< PlottingSettings.listOfMultipleBandpassFilteredTimeSeries.size();i++)
-		{
-
-			for(int j=0; j <PlottingSettings.listOfMultipleBandpassFilteredTimeSeries.get(i).variableInstancesUsedForMultioleTimeSeries.size();j++ )
-			{
-				
-				bandpass_filter = true;
-				
-				/*Variable Instance name*/
-				bw.append( PlottingSettings.listOfMultipleBandpassFilteredTimeSeries.get(i).variableInstancesUsedForMultioleTimeSeries.get(j).instanceName);
-				bw.append("\t");
-				
-		
-				
-				if(j==0){
-					
-					String nums = Integer.toString(PlottingSettings.listOfMultipleBandpassFilteredTimeSeries.get(i).variableInstancesUsedForMultioleTimeSeries.size() + PlottingSettings.listOfMultipleBandpassFilteredTimeSeries.get(j).ratiosUsedForMultioleTimeSeries.size());
-					
-					/* PV*/
-					bw.append( "1");
-					bw.append("\t");
-					
-					
-					
-					
-					
-					if(PlottingSettings.listOfMultipleBandpassFilteredTimeSeries.get(i).correlation)
-						bw.append("Yes");
-					else
-						bw.append("No");
-				
-					bw.append("\t");
-					
-					if(PlottingSettings.listOfMultipleBandpassFilteredTimeSeries.get(i).logarithmic)
-						bw.append("Yes");
-					else
-						bw.append("No");
-				
-					bw.append("\t");
-					
-					
-					bw.append( PlottingSettings.listOfMultipleBandpassFilteredTimeSeries.get(i).aggregation.toLowerCase());
-					bw.append("\t");
-					
-					bw.append( Integer.toString(PlottingSettings.listOfMultipleBandpassFilteredTimeSeries.get(i).low));
-					bw.append("\t");
-					
-					bw.append( Integer.toString(PlottingSettings.listOfMultipleBandpassFilteredTimeSeries.get(i).high));
-					bw.append("\t");
-					
-					bw.append( Integer.toString(PlottingSettings.listOfMultipleBandpassFilteredTimeSeries.get(i).Nfix));
-					bw.append("\t");
-					
-					if(PlottingSettings.listOfMultipleBandpassFilteredTimeSeries.get(i).drift)
-						bw.append("TRUE");
-					else
-						bw.append("FALSE");
-					
-					bw.append("\t");
-					
-				
-					
-					
-					
-					bw.append(nums);
-					bw.append("\t");
-					
-					
-					if(PlottingSettings.listOfMultipleBandpassFilteredTimeSeries.get(i).lowerBoundEnabled)
-						bw.append( Double.toString(PlottingSettings.listOfMultipleBandpassFilteredTimeSeries.get(i).lowerBound));
-					else
-						bw.append("No");
-					bw.append("\t");
-					
-					if(PlottingSettings.listOfMultipleBandpassFilteredTimeSeries.get(i).upperBoundEnabled)
-						bw.append( Double.toString(PlottingSettings.listOfMultipleBandpassFilteredTimeSeries.get(i).upperBound));
-					else
-						bw.append("No");
-					bw.append("\t");
-					
-					
-					
-					bw.append( Integer.toString(PlottingSettings.listOfMultipleBandpassFilteredTimeSeries.get(i).tmin));
-					bw.append("\t");
-					
-					bw.append( Integer.toString(PlottingSettings.listOfMultipleBandpassFilteredTimeSeries.get(i).tmax));
-					bw.append("\t");
-					
-					bw.append( PlottingSettings.listOfMultipleBandpassFilteredTimeSeries.get(i).timeSeriesName);
-					
-				}else{
-					
-					
-					/* PV*/
-					bw.append( "0");
-					bw.append("\t");
-					
-					
-					if(PlottingSettings.listOfMultipleBandpassFilteredTimeSeries.get(i).correlation)
-						bw.append("Yes");
-					else
-						bw.append("No");
-				
-					bw.append("\t");
-					
-					if(PlottingSettings.listOfMultipleBandpassFilteredTimeSeries.get(i).logarithmic)
-						bw.append("Yes");
-					else
-						bw.append("No");
-				
-					bw.append("\t");
-					
-					
-					bw.append( PlottingSettings.listOfMultipleBandpassFilteredTimeSeries.get(i).aggregation.toLowerCase());
-					bw.append("\t");
-					
-					bw.append( Integer.toString(PlottingSettings.listOfMultipleBandpassFilteredTimeSeries.get(i).low));
-					bw.append("\t");
-					
-					bw.append( Integer.toString(PlottingSettings.listOfMultipleBandpassFilteredTimeSeries.get(i).high));
-					bw.append("\t");
-					
-					bw.append( Integer.toString(PlottingSettings.listOfMultipleBandpassFilteredTimeSeries.get(i).Nfix));
-					bw.append("\t");
-					
-					if(PlottingSettings.listOfMultipleBandpassFilteredTimeSeries.get(i).drift)
-						bw.append("TRUE");
-					else
-						bw.append("FALSE");
-					
-					bw.append("\t");
-					
-					bw.append("0");
-					bw.append("\t");
-					
-					if(PlottingSettings.listOfMultipleBandpassFilteredTimeSeries.get(i).lowerBoundEnabled)
-						bw.append( Double.toString(PlottingSettings.listOfMultipleBandpassFilteredTimeSeries.get(i).lowerBound));
-					else
-						bw.append("No");
-					bw.append("\t");
-					
-					if(PlottingSettings.listOfMultipleBandpassFilteredTimeSeries.get(i).upperBoundEnabled)
-						bw.append( Double.toString(PlottingSettings.listOfMultipleBandpassFilteredTimeSeries.get(i).upperBound));
-					else
-						bw.append("No");
-					bw.append("\t");
-					
-					
-					
-					bw.append( Integer.toString(PlottingSettings.listOfMultipleBandpassFilteredTimeSeries.get(i).tmin));
-					bw.append("\t");
-					
-					bw.append( Integer.toString(PlottingSettings.listOfMultipleBandpassFilteredTimeSeries.get(i).tmax));
-					bw.append("\t");
-					
-					bw.append("");
-					
-				}
-				
-				bw.newLine();
-				
-			}
-			
-			for(int j=0; j <PlottingSettings.listOfMultipleTimeSeries.get(i).ratiosUsedForMultioleTimeSeries.size();j++ )
-			{
-				
-				/*Variable Instance name*/
-				bw.append( PlottingSettings.listOfMultipleTimeSeries.get(i).ratiosUsedForMultioleTimeSeries.get(j).ratioInstanceName);
-				bw.append("\t");
-				
-		
-				
-				if(j==0 && PlottingSettings.listOfMultipleTimeSeries.get(i).variableInstancesUsedForMultioleTimeSeries.size() ==0){
-					
-					String nums = Integer.toString(PlottingSettings.listOfMultipleTimeSeries.get(i).ratiosUsedForMultioleTimeSeries.size());
-					
-					/* PV*/
-					bw.append( "1");
-					bw.append("\t");
-					
-					bw.append(nums);
-					bw.append("\t");
-					
-					bw.append( PlottingSettings.listOfMultipleTimeSeries.get(i).timeSeriesName);
-					
-				}else{
-					
-					/* PV*/
-					bw.append( "0");
-					bw.append("\t");
-					
-					bw.append("0");
-					bw.append("\t");
-					
-					bw.append("");
-					
-				}
-				
-				bw.newLine();
-				
-			}
-				
-	
-		
-			
-		}
-	
-		bw.close();
-
-	}
-	catch(Exception e)
-	{
-		System.out.println("Content was not written to file!");
-	}
-		
-	}
 
 
 
@@ -1054,66 +762,6 @@ public void writeBandpassFilterTXTFile(){
 
 
 
-
-
-
-
-public void writeCrossCorrelationTXTFile(){
-	
-	
-	try{
-	
-	bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(SimulationSettings.WORKING_DIRECTORY+"/cross_correlation_function_data.txt",false)));
-	
-	
-	bw.append("Variable \t aggregation \t PV \t variable \t aggregation \t PV \t Lags");
-	bw.newLine();
-	
-	
-	for(int i=0; i< PlottingSettings.listOfCrossCorrelation.size();i++)
-	{
-		
-		cross_correlation_function = true;
-		
-		bw.append( PlottingSettings.listOfCrossCorrelation.get(i).firstComponent.getName());
-		bw.append( "\t");
-		
-		if(PlottingSettings.listOfCrossCorrelation.get(i).firstComponent.aggregationMethod.equals("No"))
-			bw.append("No");
-		else
-			bw.append( PlottingSettings.listOfCrossCorrelation.get(i).firstComponent.aggregationMethod.toLowerCase());
-		bw.append( "\t");
-		
-		bw.append("1");
-		bw.append( "\t");
-		
-		bw.append( PlottingSettings.listOfCrossCorrelation.get(i).secondComponent.getName());
-		bw.append( "\t");
-		
-		if(PlottingSettings.listOfCrossCorrelation.get(i).secondComponent.aggregationMethod.equals("No"))
-			bw.append("No");
-		else
-			bw.append( PlottingSettings.listOfCrossCorrelation.get(i).secondComponent.aggregationMethod.toLowerCase());
-		bw.append( "\t");
-		
-		bw.append("1");
-		bw.append( "\t");
-		
-		bw.append( Integer.toString(PlottingSettings.listOfCrossCorrelation.get(i).timeLag));
-		bw.newLine();
-		
-	}
-
-		
-	bw.close();
-
-}
-catch(Exception e)
-{
-	System.out.println("Content was not written to file!");
-}
-	
-}
 
 
 
@@ -1342,202 +990,6 @@ catch(Exception e)
 
 
 
-public void writeCorrelationTXTFile(){
-	
-	
-	try{
-	
-	bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(SimulationSettings.WORKING_DIRECTORY+"/correlation_distribution_data.txt",false)));
-	
-	
-	bw.append("Variable \t PV \t variable \t  PV ");
-	bw.newLine();
-	
-	
-	for(int i=0; i< PlottingSettings.listOfCorrelation.size();i++)
-	{
-		
-		correlation_distribution = true;
-		
-		bw.append( PlottingSettings.listOfCorrelation.get(i).instanceName1);
-		bw.append( "\t");
-		
-	
-		
-		bw.append("1");
-		bw.append( "\t");
-		
-		bw.append( PlottingSettings.listOfCorrelation.get(i).instanceName2);
-		bw.append( "\t");
-
-		bw.append("1");
-	
-		bw.newLine();
-		
-	}
-
-		
-	bw.close();
-
-}
-catch(Exception e)
-{
-	System.out.println("Content was not written to file!");
-}
-	
-}
-
-
-
-
-
-public void writeHeatmaps2VTXTFile(){
-		
-		
-		try{
-		
-		bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(SimulationSettings.WORKING_DIRECTORY+"/heat_maps_data_2V.txt",false)));
-		
-		
-		bw.append("Variable\t PV\t Denominator\t PV\t l_kim\t u_lim\t Variable2\t PV\t Denominator2\t PV\t l_lim\t u_lim\t bins \t tmin\t tmax \t name ");
-		bw.newLine();
-		
-		
-		for(int i=0; i< PlottingSettings.listOfHeatmaps2V.size();i++)
-		{
-			
-			heat_maps_2V = true;
-			
-			if(PlottingSettings.listOfHeatmaps2V.get(i).isVariable1){
-				bw.append( PlottingSettings.listOfHeatmaps2V.get(i).instanceName1 );
-				bw.append( "\t");
-				
-				bw.append( "1" );
-				bw.append( "\t");
-				
-				bw.append( "No");
-				bw.append( "\t");
-				
-				bw.append( "0" );
-				bw.append( "\t");
-				
-			}else{
-				
-				bw.append( PlottingSettings.listOfHeatmaps2V.get(i).instanceName1 );
-				bw.append( "\t");
-				
-				bw.append( "1" );
-				bw.append( "\t");
-				
-				bw.append( PlottingSettings.listOfHeatmaps2V.get(i).instanceNameDenominator1 );
-				bw.append( "\t");
-				
-				bw.append( "0" );
-				bw.append( "\t");
-				
-			}
-			
-			
-			if(PlottingSettings.listOfHeatmaps2V.get(i).lowerBoundEnabledX){
-				
-				bw.append( Double.toString(PlottingSettings.listOfHeatmaps2V.get(i).lowerBoundX) );
-				bw.append( "\t");
-				
-			}else{
-				bw.append( "No");
-				bw.append( "\t");
-			}
-			if(PlottingSettings.listOfHeatmaps2V.get(i).upperBoundEnabledX){
-				
-				bw.append( Double.toString(PlottingSettings.listOfHeatmaps2V.get(i).upperBoundX) );
-				bw.append( "\t");
-				
-			}else{
-				bw.append( "No");
-				bw.append( "\t");
-			}
-			
-			
-			
-			if(PlottingSettings.listOfHeatmaps2V.get(i).isVariable2){
-				bw.append( PlottingSettings.listOfHeatmaps2V.get(i).instanceName2 );
-				bw.append( "\t");
-				
-				bw.append( "0" );
-				bw.append( "\t");
-				
-				bw.append( "No");
-				bw.append( "\t");
-				
-				bw.append( "0" );
-				bw.append( "\t");
-				
-			}else{
-				
-				bw.append( PlottingSettings.listOfHeatmaps2V.get(i).instanceName2 );
-				bw.append( "\t");
-				
-				bw.append( "0" );
-				bw.append( "\t");
-				
-				bw.append( PlottingSettings.listOfHeatmaps2V.get(i).instanceNameDenominator2 );
-				bw.append( "\t");
-				
-				bw.append( "0" );
-				bw.append( "\t");
-				
-			}
-			
-			
-			if(PlottingSettings.listOfHeatmaps2V.get(i).lowerBoundEnabledY){
-				
-				bw.append( Double.toString(PlottingSettings.listOfHeatmaps2V.get(i).lowerBoundY) );
-				bw.append( "\t");
-				
-			}else{
-				bw.append( "No");
-				bw.append( "\t");
-			}
-			if(PlottingSettings.listOfHeatmaps2V.get(i).upperBoundEnabledY){
-				
-				bw.append( Double.toString(PlottingSettings.listOfHeatmaps2V.get(i).upperBoundY) );
-				bw.append( "\t");
-				
-			}else{
-				bw.append( "No");
-				bw.append( "\t");
-			}
-			
-			
-			bw.append( Integer.toString(PlottingSettings.listOfHeatmaps2V.get(i).bins ));
-			bw.append( "\t");
-			
-			
-			bw.append( Integer.toString(PlottingSettings.listOfHeatmaps2V.get(i).tmin ));
-			bw.append( "\t");
-			
-			bw.append( Integer.toString(PlottingSettings.listOfHeatmaps2V.get(i).tmax ));
-			bw.append( "\t");
-			
-		
-			bw.append(PlottingSettings.listOfHeatmaps2V.get(i).name);
-			bw.append( "\t");
-			
-			bw.newLine();
-			
-		}
-
-			
-		bw.close();
-
-	}
-	catch(Exception e)
-	{
-		System.out.println("Content was not written to file!");
-	}
-		
-	}
-
 
 
 	void writeConfigureFile(){
@@ -1749,11 +1201,11 @@ public void writeHeatmaps2VTXTFile(){
 		
 		
 		if(PlottingSettings.defaultsBoxplots.iterations.size()>0 ){
-			bw.append("boxplot_iteration_vector<-c( "+(Integer.parseInt(PlottingSettings.defaultsBoxplots.iterations.get(0).iteration)-PlottingSettings.transitionPhase));
+			bw.append("boxplot_iteration_vector<-c( "+((((int) Math.floor((Double.parseDouble(PlottingSettings.defaultsBoxplots.iterations.get(0).iteration)-PlottingSettings.transitionPhase)/Double.parseDouble(AgentSettings.agents.get(0).dataStorageSettings.period))))));
 			
 			for(int i=1; i< PlottingSettings.defaultsHistogram.iterations.size();i++){
 				
-				bw.append(","+(Integer.parseInt(PlottingSettings.defaultsBoxplots.iterations.get(i).iteration)-PlottingSettings.transitionPhase));
+				bw.append(","+(((int) Math.floor((Double.parseDouble(PlottingSettings.defaultsBoxplots.iterations.get(i).iteration)-PlottingSettings.transitionPhase)/Double.parseDouble(AgentSettings.agents.get(0).dataStorageSettings.period)))));
 				
 			}
 		
@@ -1787,11 +1239,11 @@ public void writeHeatmaps2VTXTFile(){
 		bw.newLine();
 		
 		if(PlottingSettings.defaultsHistogram.iterations.size()>0 ){
-			bw.append("histogram_iteration_vector<-c( "+(Integer.parseInt(PlottingSettings.defaultsHistogram.iterations.get(0).iteration)-PlottingSettings.transitionPhase));
+			bw.append("histogram_iteration_vector<-c( "+((((int) Math.floor((Double.parseDouble(PlottingSettings.defaultsHistogram.iterations.get(0).iteration)-PlottingSettings.transitionPhase)/Double.parseDouble(AgentSettings.agents.get(0).dataStorageSettings.period))))));
 			
 			for(int i=1; i< PlottingSettings.defaultsHistogram.iterations.size();i++){
 				
-				bw.append(","+(Integer.parseInt(PlottingSettings.defaultsHistogram.iterations.get(i).iteration)-PlottingSettings.transitionPhase));
+				bw.append(","+(((int) Math.floor((Double.parseDouble(PlottingSettings.defaultsHistogram.iterations.get(i).iteration)-PlottingSettings.transitionPhase)/Double.parseDouble(AgentSettings.agents.get(0).dataStorageSettings.period)))-PlottingSettings.transitionPhase));
 				
 			}
 		
@@ -1961,56 +1413,6 @@ public void mergeBoxplotList(){
 
 
 
-
-public void mergeCorrelationListList(){
-		
-		for(int i=0; i< PlottingSettings.listOfCorrelation.size();i++ ){
-	
-			PlottingSettings.listOfCorrelation.get(i).instanceName1 =  getVariableInstance(PlottingSettings.listOfCorrelation.get(i).variable1,PlottingSettings.listOfCorrelation.get(i).histBelongsTo, PlottingSettings.listOfCorrelation.get(i).Filter1, PlottingSettings.listOfCorrelation.get(i).Filter2);
-			PlottingSettings.listOfCorrelation.get(i).instanceName2 =  getVariableInstance(PlottingSettings.listOfCorrelation.get(i).variable2,PlottingSettings.listOfCorrelation.get(i).histBelongsTo, PlottingSettings.listOfCorrelation.get(i).Filter1, PlottingSettings.listOfCorrelation.get(i).Filter2);
-		
-		}
-		
-
-	}
-
-
-
-
-
-public void mergeHeatmaps2VList(){
-	
-	for(int i=0; i< PlottingSettings.listOfHeatmaps2V.size();i++ ){
-		
-		
-		
-		if(PlottingSettings.listOfHeatmaps2V.get(i).isVariable1){
-			
-			PlottingSettings.listOfHeatmaps2V.get(i).instanceName1 =  getVariableInstance(PlottingSettings.listOfHeatmaps2V.get(i).variable1,PlottingSettings.listOfHeatmaps2V.get(i).histBelongsTo, PlottingSettings.listOfHeatmaps2V.get(i).Filter1, PlottingSettings.listOfHeatmaps2V.get(i).Filter2);
-			
-		}else{
-			
-			PlottingSettings.listOfHeatmaps2V.get(i).instanceName1 =  getVariableInstance(PlottingSettings.listOfHeatmaps2V.get(i).agentRatio1.numerator,PlottingSettings.listOfHeatmaps2V.get(i).histBelongsTo, PlottingSettings.listOfHeatmaps2V.get(i).Filter1, PlottingSettings.listOfHeatmaps2V.get(i).Filter2);
-			PlottingSettings.listOfHeatmaps2V.get(i).instanceNameDenominator1 =  getVariableInstance(PlottingSettings.listOfHeatmaps2V.get(i).agentRatio1.denominator,PlottingSettings.listOfHeatmaps2V.get(i).histBelongsTo, PlottingSettings.listOfHeatmaps2V.get(i).Filter1, PlottingSettings.listOfHeatmaps2V.get(i).Filter2);
-		}
-		
-		
-		
-	if(PlottingSettings.listOfHeatmaps2V.get(i).isVariable2){
-			
-			PlottingSettings.listOfHeatmaps2V.get(i).instanceName2 =  getVariableInstance(PlottingSettings.listOfHeatmaps2V.get(i).variable2,PlottingSettings.listOfHeatmaps2V.get(i).histBelongsTo, PlottingSettings.listOfHeatmaps2V.get(i).Filter1, PlottingSettings.listOfHeatmaps2V.get(i).Filter2);
-			
-		}else{
-			
-			PlottingSettings.listOfHeatmaps2V.get(i).instanceName2 =  getVariableInstance(PlottingSettings.listOfHeatmaps2V.get(i).agentRatio2.numerator,PlottingSettings.listOfHeatmaps2V.get(i).histBelongsTo, PlottingSettings.listOfHeatmaps2V.get(i).Filter1, PlottingSettings.listOfHeatmaps2V.get(i).Filter2);
-			PlottingSettings.listOfHeatmaps2V.get(i).instanceNameDenominator2 =  getVariableInstance(PlottingSettings.listOfHeatmaps2V.get(i).agentRatio2.denominator,PlottingSettings.listOfHeatmaps2V.get(i).histBelongsTo, PlottingSettings.listOfHeatmaps2V.get(i).Filter1, PlottingSettings.listOfHeatmaps2V.get(i).Filter2);
-		}
-			
-		
-		
-	}
-		
-	}
 
 
 

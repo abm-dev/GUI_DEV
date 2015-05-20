@@ -1,5 +1,18 @@
+/***   Simulation GUI v0.99
+   Copyright (C) 2014 Gregor Boehl, Sander van der Hoog, Herbert Dawid, Simon Gemkow, Philipp Harting
+
+   This program is free software: you can redistribute it and/or modify
+   it under the terms of the Open Database License (ODbL 1.0) as published by
+   the Open Data Commons, see <http://opendatacommons.org/licenses/odbl/>.
+   This program is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+*/
+
+
 import java.awt.*;
 import java.awt.event.*;
+
 import javax.swing.*;
 
 import java.awt.event.ActionEvent;
@@ -14,57 +27,24 @@ import java.io.InputStreamReader;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.EventListener;
-import java.util.HashMap;
 
 import javax.swing.JButton; 
 import javax.swing.event.ChangeEvent;
-
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableColumn;
-
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+
+
+
+
+
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-/**
- * the main GUI for working with experiment. Includes both settings and plotting settings.
- * Includes all JPanels, JMenuBars, JMenuItems.
- * 
- * Comments on constuctor: almost all constructor code is related to describing
- * menu on the top ("Experiment" and "Settings" submenus). Large part of code
- * take listeners, and it may be a good idea to separate them. 
- * 
- * 
- * 
- * important variables:
- * JscrollPane - one of panes on the right, that can be scrolled.
- * AgentTableModel - the table with agents on the first gui Page.
- * it is an extension of AbstractTableModel, therefore it has nothing to do
- * with standard jTable class, and its implementation is a bit unclear
- * 
- * 
- *JTable table,tableP2  - why two tables? what does tableP2 do?
- * 
- * guiContainer - wrapped in globalScrollPane. guiContainer is a jPanel 
- * containing mainTabPane and buttomArea;
- * 
- * mainTabPane - is a JTabbedPane that contains tabs settingScrollPane 
- * (named Simulation Settings) and plottingScrollPane (named Plotting Settings)
- * 
- * settingScrollPane - wraps settingContainer (apparently making it scrollable).
- * 
- * TabSettings settingContainer - extension of jPanel that corresponds to 
- * the tab "Simulation Settings". it should contain mainly gui functionality.
- * 
- * SimulationSettings - a class with lots of static variables that correspond 
- * to data saved in xml file between launches of application. It is also 
- * extensively used when printing scrips (after build experiment button 
- * was pressed).
- * 
- */
+
 
 public class MultiGUI extends JFrame{
 	
@@ -82,7 +62,7 @@ public class MultiGUI extends JFrame{
 	private JMenu menuExperiment;
 	private JMenuItem loadExperiment, newExperiment, saveExperiment, saveExperimentAs,  exitGUI;
 	private JMenu menuSettings, setPathes;
-	private JMenuItem setPathModelXML,setExecutable, setZeroXMLFile, setPathRScripts;
+	private JMenuItem setPathModelXML,setExecutable, setZeroXMLFile, setPathRScripts, setPathXparser;
 	
 	
 	private JMenu menuImportExport, menuimportPlottingSections, menuimportParameterSections;
@@ -103,7 +83,7 @@ public class MultiGUI extends JFrame{
 	
 	
 	
-        ButtonGroup soreAllvariables;
+    ButtonGroup soreAllvariables;
 	private JRadioButton justBatchRuns;
 	
 	private ButtonGroup expSetup;
@@ -154,9 +134,7 @@ public class MultiGUI extends JFrame{
 	/*List of agent names which is read from the eurace model xml file*/
 	ArrayList<String>  agentList ;
 	
-        /**
-         * constructor for multi gui, 
-         */
+
 	
 	public MultiGUI(){
 		
@@ -165,8 +143,14 @@ public class MultiGUI extends JFrame{
 		
 		guiContainer = new JPanel();
 		
+		
+		
+		SimulationSettings.saveAllAgentVariables = true;
+		
 		setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
-		addWindowListener( new WindowAdapter(){
+		
+                
+                addWindowListener( new WindowAdapter(){
 			
 			public void windowClosing(WindowEvent e)
 			{
@@ -236,6 +220,8 @@ public class MultiGUI extends JFrame{
 		newExperiment.addActionListener(new ActionListener(){
 	    		
     		public void actionPerformed(ActionEvent evt) {
+    			
+    		
     		    
     			FileChooserFromMenuList chooseFile = new FileChooserFromMenuList(SimulationSettings.WORKING_DIRECTORY,true, false,"", false);
     			chooseFile.openFileChooser();
@@ -260,6 +246,8 @@ public class MultiGUI extends JFrame{
 		loadExperiment.addActionListener(new ActionListener(){
     		
     		public void actionPerformed(ActionEvent evt) {
+    			
+    			
     		    
     			FileChooserFromMenuList chooseFile = new FileChooserFromMenuList(SimulationSettings.WORKING_DIRECTORY,true, false,"", false);
     			chooseFile.openFileChooser();
@@ -320,11 +308,24 @@ public class MultiGUI extends JFrame{
     					settingContainer.doNotCompress.setSelected(true);
     				}
     				
+    		    	
+    		    	
+    		    	if(SimulationSettings.saveAllAgentVariables){
+    		    		settingContainer.rbNoStoreAll.setSelected(false);
+    		    		settingContainer.rbYesStoreAll.setSelected(true);
+    		    	}else{
+    		    		
+    		    		settingContainer.rbNoStoreAll.setSelected(true);
+        		    	settingContainer.rbYesStoreAll.setSelected(false);
+    		    		
+    		    	}
     				
     			} catch (IOException e1) {
 
     				JOptionPane.showMessageDialog(null,"XML File with saved settings not found. Please enter the settings manually"); 
     			}
+    			
+    			
     		}
     		
     	});
@@ -368,273 +369,9 @@ public class MultiGUI extends JFrame{
     	});
 		
 		
-		runBatchExperiments = new JMenuItem("Run Batch");
-		
-		menuExperiment.add(runBatchExperiments);
-		
-		runBatchExperiments.addActionListener(new ActionListener(){
-    		
-    		public void actionPerformed(ActionEvent evt) {
-    			
-    			new JDialogBatchExperiments();
-    			
-    			
-    		}
-    		
-    	});
-		
-		menuExperiment.add(runBatchExperiments);
 
 		
-		menuExperiment.add(exitGUI);
-		exitGUI.addActionListener(new ActionListener(){
-    		
-    	public void actionPerformed(ActionEvent evt) {
-    		
-    		
-    		
-    		Object text = "Do you want to save the settings before quitting? \n";
-    		
-    		int choice = JOptionPane.showConfirmDialog(null, text,  "Exit GUI",JOptionPane.YES_NO_CANCEL_OPTION);
-   
-    		if(choice==0){
-    			
-    			/*Choice is yes*/
-    			String PathToFile = new String(SimulationSettings.WORKING_DIRECTORY+"/SimParameter.sh");
-    			
-    			System.out.println(SimulationSettings.WORKING_DIRECTORY);
-    			System.out.println(PathToFile);
-    		    
-    			/*Safe the settings to XML file*/
-    			SaveSettings();
-    			
-    			setVisible(false);
-    			dispose();
-    			
-    			System.exit(-1);
-    			
-    			
-    		}else if(choice==1){
-    			
-    			/*Choice is no*/
-    			setVisible(false);
-    			dispose();
-    			
-    			System.out.println("agents:   "+AgentSettings.agents.get(0).agentName);
-    			
-    			System.exit(-1);
-    			
-    		}
-   
-    		}
-    	});
 		
-		menuSettings = new JMenu("Settings");
-		menuBar.add(menuSettings);
-		
-		
-		setPathes = new JMenu("Set Pathes");
-		
-		setPathModelXML = new JMenuItem("Set Path to Model.xml file");
-		setPathModelXML.setToolTipText("Current path: "+SimulationSettings.EURACE_MODEL_XML);
-		setExecutable = new JMenuItem("Set Model Executable");
-		setExecutable.setToolTipText("Current Executable: "+SimulationSettings.MAIN_EXECUTABLE);
-		setZeroXMLFile = new JMenuItem("Set initial Data File (0.xml)");
-		setZeroXMLFile.setToolTipText("Current initial Data File: "+SimulationSettings.ZERO_XML_FILE);
-		setPathRScripts = new JMenuItem("Set path to R Scripts"); 
-		setPathRScripts.setToolTipText("Current path to R Scripts: "+SimulationSettings.PATH_TO_RSCRIPTS);
-		
-		setPathModelXML.addActionListener(new ActionListener(){
-    		
-    		public void actionPerformed(ActionEvent evt) {
-    			
-    			String pathBefore;
-
-    		    
-    		    FileChooserFromMenuList chooseFile = new FileChooserFromMenuList(SimulationSettings.EURACE_MODEL_XML,false, true,"xml", false);
-    		    chooseFile.openFileChooser();
-    		    
-    		    pathBefore = SimulationSettings.EURACE_MODEL_XML;
-    		    
-    		    SimulationSettings.EURACE_MODEL_XML = chooseFile.getDirectoryOrFile();
-    		    setPathModelXML.setToolTipText("Current path: "+SimulationSettings.EURACE_MODEL_XML);
-    		    
-    		    if(!pathBefore.equals(SimulationSettings.EURACE_MODEL_XML))
-    		    {
-	    		    /*Set agent list*/
-	    		    agentList = ReadAgentListFromModelXML();
-	    			AgentSettings.agents = new ArrayList<Agent>();
-	    			
-	    			PlottingSettings.listOfAgentsVariableInstances = new ArrayList <PlottingSettings.Agent>();
-
-	    			/*List of ratio Instances*/
-	    			PlottingSettings.listOfRatioInstances = new ArrayList <PlottingSettings.RatioInstance>();
-	    			
-	    			/*List of time series*/
-	    			PlottingSettings.listOfSingleTimeSeries = new ArrayList <PlottingSettings.SingleTimeSeries>();
-	    			PlottingSettings.defaultsSingleTimeSeries = (new PlottingSettings()).new  DefaulSingleTimeSeriesSettings();
-	    			
-	    			/*List of multiple time series*/
-	    			PlottingSettings.listOfMultipleTimeSeries = new ArrayList <PlottingSettings.MultipleTimeSeries>();
-	    			PlottingSettings.defaultsMultipleTimeSeries = (new PlottingSettings()).new  DefaulMultipleTimeSeriesSettings();
-	    			
-	    			
-	    			/*List of multiple time series*/
-	    			PlottingSettings.listOfSingleBandpassFilteredTimeSeries = new ArrayList <PlottingSettings.SingleBandpassFilteredTimeSeries>();
-	    			PlottingSettings.defaultsSingleBandpassFilteredTimeSeries = (new PlottingSettings()).new  DefaultSettingsSingleBandpassFilteredTimeSeries();
-
-	    			
-	    			/*List of multiple time series*/
-	    			PlottingSettings.listOfMultipleBandpassFilteredTimeSeries = new ArrayList <PlottingSettings.MultipleBandpassFilteredTimeSeries>();
-	    			PlottingSettings.defaultsMultipleBandpassFilteredTimeSeries = (new PlottingSettings()).new  DefaultSettingsMultipleBandpassFilteredTimeSeries();
-
-	    			
-	    			/*List of multiple time series*/
-	    			PlottingSettings.listOfHistograms = new ArrayList <PlottingSettings.Histogram>();
-	    			PlottingSettings.defaultsHistogram = (new PlottingSettings()).new  DefaultSettingsHistogram();
-	    			
-	    			/*List of multiple time series*/
-	    			PlottingSettings.listOfBoxplots = new ArrayList <PlottingSettings.Boxplots>();
-	    			PlottingSettings.defaultsBoxplots = (new PlottingSettings()).new  DefaultSettingsBoxplots();
-
-
-	    			/*List of multiple time series*/
-	    			PlottingSettings.listOfHeatmaps = new ArrayList <PlottingSettings.Heatmaps>();
-	    			PlottingSettings.defaultsHeatmaps = (new PlottingSettings()).new  DefaultSettingsHeatmaps();
-	    			
-	    			
-	    			
-	    			/*List of multiple time series*/
-	    			PlottingSettings.listOfScatterPlots = new ArrayList <PlottingSettings.ScatterPlots>();
-	    			PlottingSettings.defaultsScatterPlots = (new PlottingSettings()).new  DefaultSettingsScatterPlots();
-	    			
-	    			
-	    			/*List of multiple time series*/
-	    			PlottingSettings.listOfCrossCorrelation = new ArrayList <PlottingSettings.CrossCorrelation>();
-	    			PlottingSettings.defaultsCrossCorrelation = (new PlottingSettings()).new  DefaultSettingsCrossCorrelation();
-	    			
-	    			/*List of multiple time series*/
-	    			PlottingSettings.listOfCorrelation = new ArrayList <PlottingSettings.Correlation>();
-	    			PlottingSettings.defaultsCorrelation = (new PlottingSettings()).new  DefaultSettingsCorrelation();
-	    			
-	    			/*List of multiple time series*/
-	    			PlottingSettings.listOfHeatmaps2V = new ArrayList <PlottingSettings.Heatmaps2V>();
-	    			PlottingSettings.defaultsHeatmaps2V = (new PlottingSettings()).new  DefaultSettingsHeatmaps2V();
-	    			
-	    			for(int i=0; i<agentList.size();i++)
-	    			{
-	    				
-	    				AgentSettings.agents.add(new Agent(agentList.get(i)));
-	    				PlottingSettings.Agent temAgent =  (new PlottingSettings()).new Agent(agentList.get(i));
-	    				PlottingSettings.listOfAgentsVariableInstances.add(temAgent);
-	    				
-	    			}
-	    			
-	    			/*Read Model parameters*/	
-	    			 ReadModelParameter modelXML = new ReadModelParameter();
-	    			 modelXML.getFIleListDirectlyFromEuraceModelXML();
-	    			 ModelParameterSettings.modelParameters = modelXML.GetModelParameterFromModelXMLFiles();
-	    			 
-	    			     			
-	    		    plottingContainer = new TabPlotting();
-	    			settingContainer = new TabSettings();
-	    		    
-	    			plottingContainer.validate();
-	    			settingContainer.validate();
-	    			
-
-	    	      	/*Add GUI container to Scroll pane*/
-	    	      	settingScrollPane = new JScrollPane(settingContainer);
-	    	      	settingScrollPane.setPreferredSize(new Dimension(800, 1200));
-	    	      	
-	    	      	
-	    	      	
-	    	      	
-	    	      	plottingScrollPane = new JScrollPane(plottingContainer);
-	    	      	plottingScrollPane.setPreferredSize(new Dimension(800, 1200));
-	    	      	
-	    	      	/*Add Scroll pane to JFrame*/
-	    	      	
-	    	      	//add(guiScrollPane);
-	    	      	mainTabPane.remove(1);
-
-
-				mainTabPane.remove(0);
-	    	      	 
-	    	    	 mainTabPane.add(settingScrollPane,"Simulation Settings");
-	    	      	 
-	    	      	 mainTabPane.add(plottingScrollPane,"Plotting Settings");
-	    			
-	    			
-	    			validate();
-	    			
-				
-	    		    
-	    			validate();
-    		    }
-			    
-    		}
-    	});
-		
-		
-		setExecutable.addActionListener(new ActionListener(){
-    		
-    		public void actionPerformed(ActionEvent evt) {
-    			FileChooserFromMenuList chooseFile ;
-    			
-    			if(SimulationSettings.MAIN_EXECUTABLE.equals("."))
-    				chooseFile = new FileChooserFromMenuList(SimulationSettings.EURACE_MODEL_XML,false, false,"", false);
-    			else
-    				chooseFile = new FileChooserFromMenuList(SimulationSettings.MAIN_EXECUTABLE,false, false,"", false);
-    		    
-    		    
-    
-    		    chooseFile.openFileChooser();
-    		    SimulationSettings.MAIN_EXECUTABLE = chooseFile.getDirectoryOrFile();
-    		    setExecutable.setToolTipText("Current Executable: "+SimulationSettings.MAIN_EXECUTABLE);
-			    
-    		}
-    	});
-		
-		
-		setZeroXMLFile.addActionListener(new ActionListener(){
-    		
-    		public void actionPerformed(ActionEvent evt) {
-    			
-    			FileChooserFromMenuList chooseFile;
-    			
-    			if(SimulationSettings.ZERO_XML_FILE.equals("0.xml"))
-    				chooseFile = new FileChooserFromMenuList(SimulationSettings.EURACE_MODEL_XML,false, true,"xml", false);
-    			else
-    				chooseFile = new FileChooserFromMenuList(SimulationSettings.ZERO_XML_FILE,false, true,"xml", false);
-    		    
-    		    chooseFile.openFileChooser();
-    		    SimulationSettings.ZERO_XML_FILE = chooseFile.getDirectoryOrFile();
-    		    setExecutable.setToolTipText("Current Executable: "+SimulationSettings.ZERO_XML_FILE);
-			    
-    		}
-    	});
-		
-		
-		setPathRScripts.addActionListener(new ActionListener(){
-    		
-    		public void actionPerformed(ActionEvent evt) {
-    		    
-    		    FileChooserFromMenuList chooseFile = new FileChooserFromMenuList(SimulationSettings.PATH_TO_RSCRIPTS,true, false,"", false);
-    		    chooseFile.openFileChooser();
-    		    SimulationSettings.PATH_TO_RSCRIPTS = chooseFile.getDirectoryOrFile();
-    		    setPathRScripts.setToolTipText("Current pat: "+SimulationSettings.PATH_TO_RSCRIPTS);
-			    
-    		}
-    	});
-		
-		
-		setPathes.add(setPathModelXML);
-		setPathes.add(setExecutable);
-		setPathes.add(setZeroXMLFile);
-		setPathes.add(setPathRScripts);
-		
-		menuSettings.add(setPathes);
 		
 		
 		/*menu to import and export settings: plotting settings and initial parameters*/
@@ -907,408 +644,49 @@ public class MultiGUI extends JFrame{
 						
 					}
 					
-					/*Check heatmaps*/
+			
 					
-					
-					
-				for(int i=0; i < PlottingSettings.listOfHeatmaps.size();i++){
-						
-						for(int j=0; j < AgentSettings.agents.size();j++){
-							
-							if(PlottingSettings.listOfHeatmaps.get(i).histBelongsTo.equals(AgentSettings.agents.get(j).agentName)){
-								
-								/*Check if variable is there:*/
-								
-								if(PlottingSettings.listOfHeatmaps.get(i).isVariable){
-									
-									boolean  found = false;
-									
-									for(int l=0; l < AgentSettings.agents.get(j).variableList.size();l++){
-										
-										AgentSettings.agents.get(j).variableList.get(l).isSelectedForHeatmaps = false;
-										
-										if(PlottingSettings.listOfHeatmaps.get(i).variable.name.equals(AgentSettings.agents.get(j).variableList.get(l).name)){
-											
-											AgentSettings.agents.get(j).variableList.get(l).isSelectedForHeatmaps = true;
-											found = true;
-											break;
-										}
-						
-										
-									}
-									
-									if(!found){
-										
-										PlottingSettings.listOfHeatmaps.remove(i);
-										i--;
-										
-									}
-								
-								}else{
-								/*If agent ratio*/
-								
-									boolean numeratorFound = false;
-									boolean denominatorFound = false;
-									
-									int indFound1, indFound2;
-									
-									indFound1=0;
-									indFound2=0;
-									
-									for(int l=0; l < AgentSettings.agents.get(j).variableList.size();l++){
-										
-											if(PlottingSettings.listOfHeatmaps.get(i).agentRatio.numerator.equals(AgentSettings.agents.get(j).variableList.get(l).name)){
-												numeratorFound = true;
-												indFound1 = l; 
-											}
-											else if(PlottingSettings.listOfHeatmaps.get(i).agentRatio.denominator.equals(AgentSettings.agents.get(j).variableList.get(l).name)){
-												
-												denominatorFound = true;
-												indFound2 = l;
-												
-											}
-										
-										}
-									
-									/*If either numerator or denominator not found remove agent ratio*/
-										if(!numeratorFound || !denominatorFound){
-											
-											PlottingSettings.listOfHeatmaps.remove(i);
-											i--;
-											
-										}else{
-											
-											
-											AgentSettings.agents.get(j).variableList.get(indFound1).isSelectedForHeatmaps = true;
-											AgentSettings.agents.get(j).variableList.get(indFound2).isSelectedForHeatmaps = true;
-											
-										}
-										
-										
-									}
-									
-								
-								}
-							
-							}
-							
-
-						
-						
-					}
 				
 				
-				/*Check correlation coeff*/
+								
+								
+									
+								
 				
-				for(int i=0; i < PlottingSettings.listOfCorrelation.size();i++){
-					
-					for(int j=0; j < AgentSettings.agents.size();j++){
-						
-						if(PlottingSettings.listOfCorrelation.get(i).histBelongsTo.equals(AgentSettings.agents.get(j).agentName)){
-							
-							/*Check if variable is there:*/
-							
-					
-								boolean  found1 = false;
-								
-								for(int l=0; l < AgentSettings.agents.get(j).variableList.size();l++){
-									
-									AgentSettings.agents.get(j).variableList.get(l).isSelectedForBoxplots = false;
-									
-									if(PlottingSettings.listOfCorrelation.get(i).variable1.name.equals(AgentSettings.agents.get(j).variableList.get(l).name)){
-										
-										AgentSettings.agents.get(j).variableList.get(l).isSelectedForCorrelation = true;
-										found1 = true;
-										break;
-									}
-									
-								}
-					
-									boolean  found2 = false;
-									
-									for(int l=0; l < AgentSettings.agents.get(j).variableList.size();l++){
-										
-										AgentSettings.agents.get(j).variableList.get(l).isSelectedForBoxplots = false;
-										
-										if(PlottingSettings.listOfCorrelation.get(i).variable2.name.equals(AgentSettings.agents.get(j).variableList.get(l).name)){
-											
-											AgentSettings.agents.get(j).variableList.get(l).isSelectedForCorrelation = true;
-											found2 = true;
-											break;
-										}
-								
-								
-								if(!found1 || !found2 ){
-									
-									PlottingSettings.listOfCorrelation.remove(i);
-									i--;
-									
-								}
-							
-							}
-								
-							
-							}
-						
-						}
-						
-				}
-				
-				
-				/*Check heatmaps 2V*/
+			
+		
 				
 				
 				
-				for(int i=0; i < PlottingSettings.listOfHeatmaps2V.size();i++){
-						
-						for(int j=0; j < AgentSettings.agents.size();j++){
-							
-							if(PlottingSettings.listOfHeatmaps2V.get(i).histBelongsTo.equals(AgentSettings.agents.get(j).agentName)){
-								
-								/*Check if variable is there:*/
-								
-								if(PlottingSettings.listOfHeatmaps2V.get(i).isVariable1){
-									
-									boolean  found = false;
-									
-									for(int l=0; l < AgentSettings.agents.get(j).variableList.size();l++){
-
-										if(PlottingSettings.listOfHeatmaps2V.get(i).variable1.name.equals(AgentSettings.agents.get(j).variableList.get(l).name)){
-											
-										
-											found = true;
-											break;
-										}
-						
-										
-									}
-									
-									if(!found){
-										
-										PlottingSettings.listOfHeatmaps2V.remove(i);
-										i--;
-										break;
-										
-									}
-								
-								}else{
-								/*If agent ratio*/
-								
-									boolean numeratorFound = false;
-									boolean denominatorFound = false;
-									
-									for(int l=0; l < AgentSettings.agents.get(j).variableList.size();l++){
-										
-											if(PlottingSettings.listOfHeatmaps2V.get(i).agentRatio1.numerator.equals(AgentSettings.agents.get(j).variableList.get(l).name)){
-												numeratorFound = true;
-											}
-											else if(PlottingSettings.listOfHeatmaps2V.get(i).agentRatio1.denominator.equals(AgentSettings.agents.get(j).variableList.get(l).name)){
-												
-												denominatorFound = true;
-												
-											}
-										
-										}
-									
-									/*If either numerator or denominator not found remove agent ratio*/
-										if(!numeratorFound || !denominatorFound){
-											
-											PlottingSettings.listOfHeatmaps2V.remove(i);
-											i--;
-											break;
-											
-										}
-										
-										
-									}
-								
-								
-								
-								if(PlottingSettings.listOfHeatmaps2V.get(i).isVariable2){
-									
-									boolean  found = false;
-									
-									for(int l=0; l < AgentSettings.agents.get(j).variableList.size();l++){
-										
-										AgentSettings.agents.get(j).variableList.get(l).isSelectedForHeatmaps2V = false;
-										
-										if(PlottingSettings.listOfHeatmaps2V.get(i).variable1.name.equals(AgentSettings.agents.get(j).variableList.get(l).name)){
-											
-											AgentSettings.agents.get(j).variableList.get(l).isSelectedForHeatmaps2V = true;
-											found = true;
-											break;
-										}
-						
-										
-									}
-									
-									if(!found){
-										
-										PlottingSettings.listOfHeatmaps2V.remove(i);
-										i--;
-										break;
-										
-									}
-								
-								}else{
-								/*If agent ratio*/
-								
-									boolean numeratorFound = false;
-									boolean denominatorFound = false;
-									
-									for(int l=0; l < AgentSettings.agents.get(j).variableList.size();l++){
-										
-											if(PlottingSettings.listOfHeatmaps2V.get(i).agentRatio2.numerator.equals(AgentSettings.agents.get(j).variableList.get(l).name)){
-												numeratorFound = true;
-											}
-											else if(PlottingSettings.listOfHeatmaps2V.get(i).agentRatio2.denominator.equals(AgentSettings.agents.get(j).variableList.get(l).name)){
-												
-												denominatorFound = true;
-												
-											}
-										
-										}
-									
-									/*If either numerator or denominator not found remove agent ratio*/
-										if(!numeratorFound || !denominatorFound){
-											
-											PlottingSettings.listOfHeatmaps2V.remove(i);
-											i--;
-											break;
-											
-										}
-										
-										
-									}
-								
-								
-									
-								
-								}
-							
-							}
-							
-
-						
-						
-					}
+				plottingContainer.removeAll();
 				
 				
-				for(int i =0; i < AgentSettings.agents.size();i++){
-					
-					for(int j=0; j< AgentSettings.agents.get(i).variableList.size();j++){
-						
-						AgentSettings.agents.get(i).variableList.get(j).isSelectedForHeatmaps2V = false;
-						
-						
-					}
-				}
-				
-				
-					
-				for(int i=0; i<PlottingSettings.listOfHeatmaps2V.size();i++){
-					
-					for(int j=0; j< AgentSettings.agents.size();j++){
-						
-						if(PlottingSettings.listOfHeatmaps2V.get(i).histBelongsTo.equals(AgentSettings.agents.get(j).agentName)){
-							
-							
-							if(PlottingSettings.listOfHeatmaps2V.get(i).isVariable1){
-								
-								
-								for(int k=0; k< AgentSettings.agents.get(j).variableList.size();k++){
-									
-									if(PlottingSettings.listOfHeatmaps2V.get(i).variable1.name.equals(AgentSettings.agents.get(j).variableList.get(k).name)){
-									
-										AgentSettings.agents.get(j).variableList.get(k).isSelectedForHeatmaps2V = true;
-										break;
-									
-									}
-								
-								}
-								
-								
-								
-							}else{
-								
-								for(int k=0; k< AgentSettings.agents.get(j).variableList.size();k++){
-									
-									if(PlottingSettings.listOfHeatmaps2V.get(i).agentRatio1.numerator.name.equals(AgentSettings.agents.get(j).variableList.get(k).name)){
-									
-										AgentSettings.agents.get(j).variableList.get(k).isSelectedForHeatmaps2V = true;
-										break;
-									
-									}
-								
-								}
-								
-								
-								for(int k=0; k< AgentSettings.agents.get(j).variableList.size();k++){
-									
-									if(PlottingSettings.listOfHeatmaps2V.get(i).agentRatio1.denominator.name.equals(AgentSettings.agents.get(j).variableList.get(k).name)){
-									
-										AgentSettings.agents.get(j).variableList.get(k).isSelectedForHeatmaps2V = true;
-										break;
-									
-									}
-								
-								}
-							}
-							
-						
-							
-							
-							if(PlottingSettings.listOfHeatmaps2V.get(i).isVariable2){
-								
-								
-								for(int k=0; k< AgentSettings.agents.get(j).variableList.size();k++){
-									
-									if(PlottingSettings.listOfHeatmaps2V.get(i).variable2.name.equals(AgentSettings.agents.get(j).variableList.get(k).name)){
-									
-										AgentSettings.agents.get(j).variableList.get(k).isSelectedForHeatmaps2V = true;
-										break;
-									
-									}
-								
-								}
-								
-								
-								
-							}else{
-								
-								for(int k=0; k< AgentSettings.agents.get(j).variableList.size();k++){
-									
-									if(PlottingSettings.listOfHeatmaps2V.get(i).agentRatio2.numerator.name.equals(AgentSettings.agents.get(j).variableList.get(k).name)){
-									
-										AgentSettings.agents.get(j).variableList.get(k).isSelectedForHeatmaps2V = true;
-										break;
-									
-									}
-								
-								}
-								
-								
-								for(int k=0; k< AgentSettings.agents.get(j).variableList.size();k++){
-									
-									if(PlottingSettings.listOfHeatmaps2V.get(i).agentRatio2.denominator.name.equals(AgentSettings.agents.get(j).variableList.get(k).name)){
-									
-										AgentSettings.agents.get(j).variableList.get(k).isSelectedForHeatmaps2V = true;
-										break;
-									
-									}
-								
-								}
-							}
-
-							
-					
-					}
-				
-
 	
-				
-				}
-			}
+				 plottingContainer = new TabPlotting();
+	    			
+	    			plottingContainer.validate();
+	    		
+	    	      	
+	    	      	
+	    	      	
+	    	      	plottingScrollPane = new JScrollPane(plottingContainer);
+	    	      	plottingScrollPane.setPreferredSize(new Dimension(800, 1200));
+	    	      	
+	    	      	/*Add Scroll pane to JFrame*/
+	    	      	
+	    	      	//add(guiScrollPane);
+	    	      	mainTabPane.remove(1);
+
+
+			
+	    	    
+	    	      	 
+	    	      	 mainTabPane.add(plottingScrollPane,"Plotting Settings");
+	    			
+	    			
+	    			validate();
+	    			
+	    			
 					
 				}catch(Exception ex){
 					
@@ -1447,7 +825,279 @@ public class MultiGUI extends JFrame{
 		menuImportExport.add(menuimportParameterSections);
 		
 		
-		menuSettings.add(menuImportExport);
+		menuExperiment.add(menuImportExport);
+		
+		
+		runBatchExperiments = new JMenuItem("Run Batch");
+		
+		menuExperiment.add(runBatchExperiments);
+		
+		runBatchExperiments.addActionListener(new ActionListener(){
+    		
+    		public void actionPerformed(ActionEvent evt) {
+    			
+    			new JDialogBatchExperiments();
+    			
+    			
+    		}
+    		
+    	});
+		
+		menuExperiment.add(runBatchExperiments);
+
+		
+		menuExperiment.add(exitGUI);
+		exitGUI.addActionListener(new ActionListener(){
+    		
+    	public void actionPerformed(ActionEvent evt) {
+    		
+    		
+    		
+    		Object text = "Do you want to save the settings before quitting? \n";
+    		
+    		int choice = JOptionPane.showConfirmDialog(null, text,  "Exit GUI",JOptionPane.YES_NO_CANCEL_OPTION);
+   
+    		if(choice==0){
+    			
+    			/*Choice is yes*/
+    			String PathToFile = new String(SimulationSettings.WORKING_DIRECTORY+"/SimParameter.sh");
+    			
+    			System.out.println(SimulationSettings.WORKING_DIRECTORY);
+    			System.out.println(PathToFile);
+    		    
+    			/*Safe the settings to XML file*/
+    			SaveSettings();
+    			
+    			setVisible(false);
+    			dispose();
+    			
+    			System.exit(-1);
+    			
+    			
+    		}else if(choice==1){
+    			
+    			/*Choice is no*/
+    			setVisible(false);
+    			dispose();
+    			
+    			System.out.println("agents:   "+AgentSettings.agents.get(0).agentName);
+    			
+    			System.exit(-1);
+    			
+    		}
+   
+    		}
+    	});
+		
+		menuSettings = new JMenu("Settings");
+		menuBar.add(menuSettings);
+		
+		
+		setPathes = new JMenu("Set Pathes");
+		
+		setPathModelXML = new JMenuItem("Set Path to Model.xml file");
+		setPathModelXML.setToolTipText("Current path: "+SimulationSettings.EURACE_MODEL_XML);
+		setExecutable = new JMenuItem("Set Model Executable");
+		setExecutable.setToolTipText("Current Executable: "+SimulationSettings.MAIN_EXECUTABLE);
+		setZeroXMLFile = new JMenuItem("Set initial Data File (0.xml)");
+		setZeroXMLFile.setToolTipText("Current initial Data File: "+SimulationSettings.ZERO_XML_FILE);
+		setPathRScripts = new JMenuItem("Set path to R Scripts"); 
+		setPathRScripts.setToolTipText("Current path to R Scripts: "+SimulationSettings.PATH_TO_RSCRIPTS);
+		setPathXparser = new JMenuItem("Set path to xparser"); 
+		setPathXparser.setToolTipText("Current path to xparser: "+SimulationSettings.PATH_TO_XPARSER);
+		
+		setPathModelXML.addActionListener(new ActionListener(){
+    		
+    		public void actionPerformed(ActionEvent evt) {
+    			
+    			String pathBefore;
+
+    			
+    		    FileChooserFromMenuList chooseFile = new FileChooserFromMenuList(SimulationSettings.EURACE_MODEL_XML,false, true,"xml", false);
+    		    chooseFile.openFileChooser();
+    		    
+    		    pathBefore = SimulationSettings.EURACE_MODEL_XML;
+    		    
+    		    SimulationSettings.EURACE_MODEL_XML = chooseFile.getDirectoryOrFile();
+    		    setPathModelXML.setToolTipText("Current path: "+SimulationSettings.EURACE_MODEL_XML);
+    		    
+    		    if(!pathBefore.equals(SimulationSettings.EURACE_MODEL_XML))
+    		    {
+	    		    /*Set agent list*/
+	    		    agentList = ReadAgentListFromModelXML();
+	    			AgentSettings.agents = new ArrayList<Agent>();
+	    			
+	    			PlottingSettings.listOfAgentsVariableInstances = new ArrayList <PlottingSettings.Agent>();
+
+	    			/*List of ratio Instances*/
+	    			PlottingSettings.listOfRatioInstances = new ArrayList <PlottingSettings.RatioInstance>();
+	    			
+	    			/*List of time series*/
+	    			PlottingSettings.listOfSingleTimeSeries = new ArrayList <PlottingSettings.SingleTimeSeries>();
+	    			PlottingSettings.defaultsSingleTimeSeries = (new PlottingSettings()).new  DefaulSingleTimeSeriesSettings();
+	    			
+	    			/*List of multiple time series*/
+	    			PlottingSettings.listOfMultipleTimeSeries = new ArrayList <PlottingSettings.MultipleTimeSeries>();
+	    			PlottingSettings.defaultsMultipleTimeSeries = (new PlottingSettings()).new  DefaulMultipleTimeSeriesSettings();
+	    			
+	    			
+	    	
+	    			
+	    			/*List of multiple time series*/
+	    			PlottingSettings.listOfHistograms = new ArrayList <PlottingSettings.Histogram>();
+	    			PlottingSettings.defaultsHistogram = (new PlottingSettings()).new  DefaultSettingsHistogram();
+	    			
+	    			/*List of multiple time series*/
+	    			PlottingSettings.listOfBoxplots = new ArrayList <PlottingSettings.Boxplots>();
+	    			PlottingSettings.defaultsBoxplots = (new PlottingSettings()).new  DefaultSettingsBoxplots();
+
+
+	    			/*List of multiple time series*/
+	    			PlottingSettings.listOfHeatmaps = new ArrayList <PlottingSettings.Heatmaps>();
+	    			PlottingSettings.defaultsHeatmaps = (new PlottingSettings()).new  DefaultSettingsHeatmaps();
+	    			
+	    			
+	    			
+	    			/*List of multiple time series*/
+	    			PlottingSettings.listOfScatterPlots = new ArrayList <PlottingSettings.ScatterPlots>();
+	    			PlottingSettings.defaultsScatterPlots = (new PlottingSettings()).new  DefaultSettingsScatterPlots();
+	    			
+	    			
+	    	
+	    			
+	    			for(int i=0; i<agentList.size();i++)
+	    			{
+	    				
+	    				AgentSettings.agents.add(new Agent(agentList.get(i)));
+	    				PlottingSettings.Agent temAgent =  (new PlottingSettings()).new Agent(agentList.get(i));
+	    				PlottingSettings.listOfAgentsVariableInstances.add(temAgent);
+	    				
+	    			}
+	    			
+	    			/*Read Model parameters*/	
+	    			 ReadModelParameter modelXML = new ReadModelParameter();
+	    			 modelXML.getFIleListDirectlyFromEuraceModelXML();
+	    			 ModelParameterSettings.modelParameters = modelXML.GetModelParameterFromModelXMLFiles();
+	    			 
+	    			     			
+	    		    plottingContainer = new TabPlotting();
+	    			settingContainer = new TabSettings();
+	    		    
+	    			plottingContainer.validate();
+	    			settingContainer.validate();
+	    			
+
+	    	      	/*Add GUI container to Scroll pane*/
+	    	      	settingScrollPane = new JScrollPane(settingContainer);
+	    	      	settingScrollPane.setPreferredSize(new Dimension(800, 1200));
+	    	      	
+	    	      	
+	    	      	
+	    	      	
+	    	      	plottingScrollPane = new JScrollPane(plottingContainer);
+	    	      	plottingScrollPane.setPreferredSize(new Dimension(800, 1200));
+	    	      	
+	    	      	/*Add Scroll pane to JFrame*/
+	    	      	
+	    	      	//add(guiScrollPane);
+	    	      	mainTabPane.remove(1);
+
+
+				mainTabPane.remove(0);
+	    	      	 
+	    	    	 mainTabPane.add(settingScrollPane,"Simulation Settings");
+	    	      	 
+	    	      	 mainTabPane.add(plottingScrollPane,"Plotting Settings");
+	    			
+	    			
+	    			validate();
+	    			
+				
+	    		    
+	    			validate();
+    		    }
+			    
+    		}
+    	});
+		
+		
+		setExecutable.addActionListener(new ActionListener(){
+    		
+    		public void actionPerformed(ActionEvent evt) {
+    			
+    			
+    			FileChooserFromMenuList chooseFile ;
+    			
+    			if(SimulationSettings.MAIN_EXECUTABLE.equals("."))
+    				chooseFile = new FileChooserFromMenuList(SimulationSettings.EURACE_MODEL_XML,false, false,"", false);
+    			else
+    				chooseFile = new FileChooserFromMenuList(SimulationSettings.MAIN_EXECUTABLE,false, false,"", false);
+    		    
+    		    
+    
+    		    chooseFile.openFileChooser();
+    		    SimulationSettings.MAIN_EXECUTABLE = chooseFile.getDirectoryOrFile();
+    		    setExecutable.setToolTipText("Current Executable: "+SimulationSettings.MAIN_EXECUTABLE);
+			    
+    		}
+    	});
+		
+		
+		setZeroXMLFile.addActionListener(new ActionListener(){
+    		
+    		public void actionPerformed(ActionEvent evt) {
+    			
+    			FileChooserFromMenuList chooseFile;
+    			
+    			if(SimulationSettings.ZERO_XML_FILE.equals("0.xml"))
+    				chooseFile = new FileChooserFromMenuList(SimulationSettings.EURACE_MODEL_XML,false, true,"xml", false);
+    			else
+    				chooseFile = new FileChooserFromMenuList(SimulationSettings.ZERO_XML_FILE,false, true,"xml", false);
+    		    
+    		    chooseFile.openFileChooser();
+    		    SimulationSettings.ZERO_XML_FILE = chooseFile.getDirectoryOrFile();
+    		    setExecutable.setToolTipText("Current Executable: "+SimulationSettings.ZERO_XML_FILE);
+			    
+    		}
+    	});
+		
+		
+		setPathRScripts.addActionListener(new ActionListener(){
+    		
+    		public void actionPerformed(ActionEvent evt) {
+    		    
+    		    FileChooserFromMenuList chooseFile = new FileChooserFromMenuList(SimulationSettings.PATH_TO_RSCRIPTS,true, false,"", false);
+    		    chooseFile.openFileChooser();
+    		    SimulationSettings.PATH_TO_RSCRIPTS = chooseFile.getDirectoryOrFile();
+    		    setPathRScripts.setToolTipText("Current pat: "+SimulationSettings.PATH_TO_RSCRIPTS);
+			    
+    		}
+    	});
+		
+		
+		setPathXparser.addActionListener(new ActionListener(){
+    		
+    		public void actionPerformed(ActionEvent evt) {
+    		    
+    		    FileChooserFromMenuList chooseFile = new FileChooserFromMenuList(SimulationSettings.PATH_TO_XPARSER,false, false,"", false);
+    		    chooseFile.openFileChooser();
+    		    SimulationSettings.PATH_TO_XPARSER = chooseFile.getDirectoryOrFile();
+    		    setPathXparser.setToolTipText("Current path: "+SimulationSettings.PATH_TO_XPARSER);
+			    
+    		}
+    	});
+		
+		
+		setPathes.add(setPathModelXML);
+		setPathes.add(setExecutable);
+		setPathes.add(setZeroXMLFile);
+		setPathes.add(setPathRScripts);
+		setPathes.add(setPathXparser);
+		
+		menuSettings.add(setPathes);
+		
+		
+
 		
 		/*menu plotting selection*/
 		
@@ -1569,17 +1219,15 @@ public class MultiGUI extends JFrame{
 	    //pack();
 	    setVisible(true);
 	 
-	
+	  
 
 	}
 	
 
 	
-	/**
-         * this is an inner class of MultiGUI that modifies the state 
-         * of SimulationSettings after the radiobuttons in Settings\database 
-         * compression properties are changed.
-         */	
+	
+	
+	
 	
 	
 	
@@ -1633,20 +1281,7 @@ public class MultiGUI extends JFrame{
 		
 	}
 	
-	/**
-         * a method that is drawing the table that allows to select, which 
-         * agents should be recorded, after which periods and with which phase.
-         * 
-         * Another question is what does settingContainer.drawTableParemters();
-         * do, which is run exactly after drawAgentTable() ? 
-         * 
-         * important variables:
-         * colHeaders: used to define headers of each column of the table/
-         * tabAgentsModel: a global variable of MultiGUI 
-         * 
-         * unclear: what does lcRightPanel do, 
-         * 
-         */
+	
 	
 	
 	void drawAgentTable(){
@@ -1665,7 +1300,7 @@ public class MultiGUI extends JFrame{
 		tabAgentsModel = new AgentTableModel(colHeaders,AgentSettings.agents);
 		DrawStoreOptionTable tabAgents = new DrawStoreOptionTable(tabAgentsModel, colHeaders);
 	    
-                listScrollAgentTable = new JScrollPane(tabAgents);  
+	    listScrollAgentTable = new JScrollPane(tabAgents);  
 		listScrollAgentTable.setPreferredSize(new Dimension(280, 179)); 
 		settingContainer.g.gridx = 0;
 		settingContainer.g.gridy= 0;
@@ -1730,16 +1365,6 @@ public class MultiGUI extends JFrame{
 	}
 	
 	/*This class loads the settings from the settings.xml files*/
-        
-        /**
-         * This method is run at the beginning of constructor of MultiGUI.
-         * it is still not clear if the only place where the program is saving 
-         * settings are fields of 'SimulationSettings' variable, or not.
-         * 
-         * is this method modifying anything else?
-         * 
-         * 
-         */
 	void LoadSettings(String file){
 
 		/*Return a warning message if the eurace model xml file is not there*/
@@ -1951,6 +1576,12 @@ public class MultiGUI extends JFrame{
 		    SimulationSettings.PATH_TO_RSCRIPTS = chooseFile4.getDirectoryOrFile();
 		    
 		    
+		    FileChooserFromMenuList chooseFile5;
+		    JOptionPane.showMessageDialog(null,"Select xparser executable!"); 
+		    chooseFile5 = new FileChooserFromMenuList(SimulationSettings.PATH_TO_XPARSER,false, false,"", false);
+			
+		    chooseFile5.openFileChooser();
+		    SimulationSettings.PATH_TO_XPARSER = chooseFile5.getDirectoryOrFile();
 		    
 		    /*Set agent list*/
 		    agentList = ReadAgentListFromModelXML();
@@ -2017,10 +1648,17 @@ public class MultiGUI extends JFrame{
 			    		public void actionPerformed(ActionEvent evt) {
 			    			
 			    			
+			    			 SimulationSettings.numProcessors=Integer.parseInt(TabSettings.cbNumProcessors.getSelectedItem().toString());
+			    			
 			    			/*Write shadow model xml file for selected data storage*/
-			    			
-			    			
-			    			
+			    			if(!SimulationSettings.saveAllAgentVariables){
+				    			try {
+									OverwriteFlameXMLCFile overwrite = new OverwriteFlameXMLCFile();
+								} catch (IOException e1) {
+									// TODO Auto-generated catch block
+									e1.printStackTrace();
+								}
+			    			}
 			    			ShadowModelXML shadowFile = new ShadowModelXML();
 			    			
 			    			shadowFile.setFilterAndWeights();
@@ -2061,34 +1699,6 @@ public class MultiGUI extends JFrame{
 			    						}
 			    						if(!AgentSettings.agents.get(i).variableList.get(j).name.equals("id"))
 			    						ShadowModelXML.agents.get(ShadowModelXML.agents.size()-1).memory.add((new ShadowModelXML()).new variable(AgentSettings.agents.get(i).variableList.get(j).name,AgentSettings.agents.get(i).variableList.get(j).type));
-			    					}else if(AgentSettings.agents.get(i).variableList.get(j).isSelectedForHeatmaps){
-			    						if(!found){
-			    							ShadowModelXML.agents.add((new ShadowModelXML()).new xagent(AgentSettings.agents.get(i).agentName));
-			    							found =true;
-										ShadowModelXML.agents.get(ShadowModelXML.agents.size()-1).memory.add((new ShadowModelXML()).new variable("id","int"));
-			    						}
-			    						if(!AgentSettings.agents.get(i).variableList.get(j).name.equals("id"))
-			    							ShadowModelXML.agents.get(ShadowModelXML.agents.size()-1).memory.add((new ShadowModelXML()).new variable(AgentSettings.agents.get(i).variableList.get(j).name,AgentSettings.agents.get(i).variableList.get(j).type));
-			    					}else if(AgentSettings.agents.get(i).variableList.get(j).isSelectedForHeatmaps2V){
-			    						if(!found){
-			    							ShadowModelXML.agents.add((new ShadowModelXML()).new xagent(AgentSettings.agents.get(i).agentName));
-			    							found =true;
-										ShadowModelXML.agents.get(ShadowModelXML.agents.size()-1).memory.add((new ShadowModelXML()).new variable("id","int"));
-			    						}
-			    						if(!AgentSettings.agents.get(i).variableList.get(j).name.equals("id"))
-			    							ShadowModelXML.agents.get(ShadowModelXML.agents.size()-1).memory.add((new ShadowModelXML()).new variable(AgentSettings.agents.get(i).variableList.get(j).name,AgentSettings.agents.get(i).variableList.get(j).type));
-			    					}else if(AgentSettings.agents.get(i).variableList.get(j).isSelectedForCorrelation){
-			    						if(!found){
-			    							ShadowModelXML.agents.add((new ShadowModelXML()).new xagent(AgentSettings.agents.get(i).agentName));
-			    							found =true;
-										ShadowModelXML.agents.get(ShadowModelXML.agents.size()-1).memory.add((new ShadowModelXML()).new variable("id","int"));
-			    						}
-			    						
-			    						if(!AgentSettings.agents.get(i).variableList.get(j).name.equals("id"))
-			    							ShadowModelXML.agents.get(ShadowModelXML.agents.size()-1).memory.add((new ShadowModelXML()).new variable(AgentSettings.agents.get(i).variableList.get(j).name,AgentSettings.agents.get(i).variableList.get(j).type));
-			    					
-			    					
-			    					
 			    					}else if(AgentSettings.agents.get(i).variableList.get(j).isSelectedFilter){
 			    						if(!found){
 			    							ShadowModelXML.agents.add((new ShadowModelXML()).new xagent(AgentSettings.agents.get(i).agentName));
@@ -2157,10 +1767,7 @@ public class MultiGUI extends JFrame{
 			    			rInterface.writeHeatmapsTXTFile();
 			    			rInterface.writeScatterTXTFile();
 			    			
-			    			rInterface.writeCrossCorrelationTXTFile();
-			    			rInterface.writeCorrelationTXTFile();
-			    			rInterface.writeHeatmaps2VTXTFile();
-			    			rInterface.writeBandpassFilterTXTFile();
+			    		
 			    			
 			    			rInterface.writeConfigureFile();
 			    			
@@ -2168,16 +1775,9 @@ public class MultiGUI extends JFrame{
 			    			AuxFunctions.copyfile(SimulationSettings.WORKING_DIRECTORY+"/variables.txt",SimulationSettings.PATH_TO_RSCRIPTS+"/Data_Files/variables.txt");
 			    			AuxFunctions.copyfile(SimulationSettings.WORKING_DIRECTORY+"/time_series_data.txt",SimulationSettings.PATH_TO_RSCRIPTS+"/Data_Files/time_series_data.txt");
 			    			AuxFunctions.copyfile(SimulationSettings.WORKING_DIRECTORY+"/multiple_time_series_data.txt",SimulationSettings.PATH_TO_RSCRIPTS+"/Data_Files/multiple_time_series_data.txt");
-			    			AuxFunctions.copyfile(SimulationSettings.WORKING_DIRECTORY+"/growth_rate_data.txt",SimulationSettings.PATH_TO_RSCRIPTS+"/Data_Files/growth_rate_data.txt");
-			    			AuxFunctions.copyfile(SimulationSettings.WORKING_DIRECTORY+"/ratio_data.txt",SimulationSettings.PATH_TO_RSCRIPTS+"/Data_Files/ratio_data.txt");
 			    			AuxFunctions.copyfile(SimulationSettings.WORKING_DIRECTORY+"/boxplot_data.txt",SimulationSettings.PATH_TO_RSCRIPTS+"/Data_Files/boxplot_data.txt");
 			    			AuxFunctions.copyfile(SimulationSettings.WORKING_DIRECTORY+"/histogram_data.txt",SimulationSettings.PATH_TO_RSCRIPTS+"/Data_Files/histogram_data.txt");
-			    			AuxFunctions.copyfile(SimulationSettings.WORKING_DIRECTORY+"/heat_maps_data.txt",SimulationSettings.PATH_TO_RSCRIPTS+"/Data_Files/heat_maps_data.txt");
-			    			AuxFunctions.copyfile(SimulationSettings.WORKING_DIRECTORY+"/scatter_data.txt",SimulationSettings.PATH_TO_RSCRIPTS+"/Data_Files/scatter_data.txt");
-			    			AuxFunctions.copyfile(SimulationSettings.WORKING_DIRECTORY+"/bandpass_filter_data.txt",SimulationSettings.PATH_TO_RSCRIPTS+"/Data_Files/bandpass_filter_data.txt");
-			    			AuxFunctions.copyfile(SimulationSettings.WORKING_DIRECTORY+"/cross_correlation_function_data.txt",SimulationSettings.PATH_TO_RSCRIPTS+"/Data_Files/cross_correlation_function.txt");
-			    			AuxFunctions.copyfile(SimulationSettings.WORKING_DIRECTORY+"/correlation_distribution_data.txt",SimulationSettings.PATH_TO_RSCRIPTS+"/Data_Files/correlation_distribution_data.txt");
-			    			AuxFunctions.copyfile(SimulationSettings.WORKING_DIRECTORY+"/heat_maps_data_2V.txt",SimulationSettings.PATH_TO_RSCRIPTS+"/Data_Files/heat_maps_data_2V.txt");
+
 			    			
 			    			
 			    			AuxFunctions.copyfile(SimulationSettings.WORKING_DIRECTORY+"/Configure.r",SimulationSettings.PATH_TO_RSCRIPTS+"/Configure.r");
@@ -2208,21 +1808,7 @@ public class MultiGUI extends JFrame{
 			    			
 			    			String PathToFile = new String("launch.sh");
 			    			
-                                                
-                                                System.out.println("before updating init");
-                                                HashMap<String, String> dict=new HashMap<>();
-                                                
-//                                                String slash="\\";                                                
-                                                dict.put("<SimulationSettings.WORKING_DIRECTORY>",
-                                                        SimulationSettings.WORKING_DIRECTORY.replaceAll("\\\\","\\\\\\\\"));
-//                                                
-                                                System.out.println(SimulationSettings.WORKING_DIRECTORY);
-                                                System.out.println(dict);
-                                                
-                                                ShellTemplateUpdater updater=new ShellTemplateUpdater(dict);
-                                                updater.update("template_files/launch_template.sh", "launch.sh");
-                                                
-			    			/*
+			    			
 			    			writeGeneralSettingsToFile launchSH = new  writeGeneralSettingsToFile(PathToFile,true);
 			    			
 			    			launchSH.writeToFile("####################################################");
@@ -2230,66 +1816,12 @@ public class MultiGUI extends JFrame{
 			    			launchSH.writeToFile("# It contains the setting of the current working directory and launching of the run_exp.sh");
 			    			launchSH.writeToFile("###################################################");
 			    			launchSH.writeToFile("\n");
-			    			launchSH.writeToFile("cd "+SimulationSettings.WORKING_DIRECTORY);
+			    			launchSH.writeToFile("cd '"+SimulationSettings.WORKING_DIRECTORY+"'");
 			    			launchSH.writeToFile("bash run_exp.sh");
 			    			launchSH.writeToFile("\n");
-                                                */
-                                                
+			    		
 			    			/*Choice is yes*/
-			    			
-                                                dict.put("<SimulationSettings.ZERO_XML_FILE>",
-                                                        SimulationSettings.ZERO_XML_FILE.replaceAll("\\\\","\\\\\\\\"));
-                                                dict.put("<SimulationSettings.numIterations>",
-                                                        SimulationSettings.numIterations+"");
-                                                dict.put("<SimulationSettings.numProcessors>",
-                                                        SimulationSettings.numProcessors+"");
-                                                
-                                                //If one parameters is selected:
-                                                if(settingContainer.parameterVariationOnePars.isSelected())			    				
-			    			    dict.put("<NUM_PARS>","1");
-                                                else 
-                                                    dict.put("<NUM_PARS>","0");                                                                
-                                                
-                                                
-                                                       
-                                                dict.put("<SimulationSettings.numBatchRuns>",
-                                                        SimulationSettings.numBatchRuns+"");
-                                                dict.put("<SimulationSettings.MAIN_EXECUTABLE>",
-                                                        SimulationSettings.MAIN_EXECUTABLE.replaceAll("\\\\","\\\\\\\\"));                                                
-			    			
-                                                if(SimulationSettings.saveAllAgentVariables)
-                                                    dict.put("<MODEL_XML_FILE>",
-                                                        SimulationSettings.EURACE_MODEL_XML.replaceAll("\\\\","\\\\\\\\"));
-                                                else
-                                                    dict.put("<MODEL_XML_FILE>",
-                                                        (SimulationSettings.WORKING_DIRECTORY+"/shadow_model.xml'").replaceAll("\\\\","\\\\\\\\"));
-                                                
-                                                dict.put("<SimulationSettings.PATH_TO_RSCRIPTS>",
-                                                        (SimulationSettings.PATH_TO_RSCRIPTS+"/").replaceAll("\\\\","\\\\\\\\"));                                                
-			    			dict.put("<SimulationSettings.DO_RUN>",
-                                                        SimulationSettings.DO_RUN+"");
-                                                dict.put("<SimulationSettings.DO_COMPRESS_KEEP_ORIGINAL>",
-                                                        SimulationSettings.DO_COMPRESS_KEEP_ORIGINAL+"");
-                                                dict.put("<SimulationSettings.DO_COMPRESS_REMOVE_ORIGINAL>",
-                                                        SimulationSettings.DO_COMPRESS_REMOVE_ORIGINAL+"");
-                                                dict.put("<SimulationSettings.DO_DECOMPRESS>",
-                                                        SimulationSettings.DO_DECOMPRESS+"");
-                                                dict.put("<SimulationSettings.DO_REMOVE_DB>",
-                                                        SimulationSettings.DO_REMOVE_DB+"");
-                                                
-                                                
-                                                if(plottingContainer.singleRunAnalyisCheckBox.isSelected() || plottingContainer.batchRunAnalyisCheckBox.isSelected() || plottingContainer.parameterAnalyisCheckBox.isSelected())
-                                                    dict.put("<RUN_R_SCRIPTS>","bash ./r_serial.sh");
-                                                else
-                                                    dict.put("<RUN_R_SCRIPTS>","#Don't run r scripts\\n#bash ./r_serial.sh");
-                                                
-                                                updater.update("template_files/run_exp_template.sh", "run_exp.sh");
-                                                
-                                                
-                                                
-                                                //writeGeneralSettingsToFile expSettingsSHFile = new  writeGeneralSettingsToFile(PathToFile,true);			    			
-                                                /*
-                                                PathToFile = new String(SimulationSettings.WORKING_DIRECTORY+"/run_exp.sh");
+			    			PathToFile = new String(SimulationSettings.WORKING_DIRECTORY+"/run_exp.sh");
 			    			
 			    			System.out.println(SimulationSettings.WORKING_DIRECTORY);
 			    			System.out.println(PathToFile);
@@ -2349,6 +1881,34 @@ public class MultiGUI extends JFrame{
 			    				expSettingsSHFile.writeToFile("export NUM_PARS=0");
 
 			    			}
+			    			expSettingsSHFile.writeToFile("\n");
+			    			
+			    			
+			    			if(SimulationSettings.saveAllAgentVariables ){
+			    				
+			    				
+			    				expSettingsSHFile.writeToFile(SimulationSettings.PATH_TO_XPARSER+" -f "+SimulationSettings.EURACE_MODEL_XML); 
+			    				
+			    			}
+			    			
+			    			String filePath = SimulationSettings.EURACE_MODEL_XML;
+			    			
+			    			if( SimulationSettings.DO_RUN==1){
+				    			if(filePath.contains("/")){
+				    				filePath = filePath.substring(0,filePath.lastIndexOf("/"));
+				    				expSettingsSHFile.writeToFile("cd "+filePath);
+				    				expSettingsSHFile.writeToFile("make");
+				    				expSettingsSHFile.writeToFile("cd \"$BASE\"");
+				    				
+				    			}else{
+				    				filePath = filePath.substring(0,filePath.lastIndexOf("\\"));
+				    				expSettingsSHFile.writeToFile("cd "+filePath);
+				    				expSettingsSHFile.writeToFile("make");
+				    				expSettingsSHFile.writeToFile("cd \"$BASE\"");
+				    				
+				    			}
+			    			}
+			    			
 			    			expSettingsSHFile.writeToFile("\n");
 			    			
 			    			expSettingsSHFile.writeToFile("#Set number of batch runs");
@@ -2443,51 +2003,8 @@ public class MultiGUI extends JFrame{
 			    			System.out.println(PathToFile);
 			    			
 			    			
-			    			*/
-			    		    
-                                                
-                                                
-                                                String experimentSettings="";
-                                                if(settingContainer.parameterVariationOnePars.isSelected()){
-                                                    //If one parameters is selected:	
-                                                    //Check if settings are correct, otherwise return warning message/
-                                                    try{
-                                                        SimulationSettings.PARAMETER_1.name.equals(null);			    			
-				    					
-                                                        SimulationSettings.PARAMETER_1.values.get(0);
-				    					
-				    					
-                                                        experimentSettings+="\nexport PARAMETER_1='"+SimulationSettings.PARAMETER_1.name+"'";
-					    				
-					    				
-                                                        String values1 ="";
-					    				
-					    				
-                                                        for(int i=0; i<SimulationSettings.PARAMETER_1.values.size();i++ ){			
-                                                            values1 = values1+" "+SimulationSettings.PARAMETER_1.values.get(i).value;
-                                                        }
-                                                        experimentSettings+="\nexport F1_values='"+values1+"'"
-                                                                +"\n"
-					    			+"export F1_values_b=("+ values1+")"
-                                                                +"\n"
-                                                                +"for i in ${!F1_values_b[*]};do export F1_values_b_$i='${F1_values_b[$i]}';done";
-			    				}catch(Exception e){
-			    					JOptionPane.showMessageDialog(null,"Parameter 1 is not selected!");
-			    				}
-			    		
-			    			}else
-			    			{
-			    				//If no parameters are selected:
-			    				experimentSettings="# No parameters selected";
-			    			}
-                                                dict.put("<ExperimentSettings>",
-                                                        (experimentSettings).replaceAll("\\\\","\\\\\\\\"));                                                
 			    			
-                                                updater.update("template_files/set_exp_template.sh", SimulationSettings.WORKING_DIRECTORY+"/set_exp.sh");
-                                                
-                                                /*
-                                                
-                                                
+			    		    
 			    			writeGeneralSettingsToFile setExpSHFile = new  writeGeneralSettingsToFile(SimulationSettings.WORKING_DIRECTORY+"/set_exp.sh", true);
 			    			
 			    			setExpSHFile.writeToFile("####################################################");
@@ -2502,7 +2019,7 @@ public class MultiGUI extends JFrame{
 			    				
 			    				//If one parameters is selected:
 			    				
-			    				//Check if settings are correct, otherwise return warning message/
+			    				/*Check if settings are correct, otherwise return warning message*/
 			    
 			    				try{
 			    					
@@ -2525,6 +2042,8 @@ public class MultiGUI extends JFrame{
 					    				expSettingsSHFile.writeToFile("\n");
 					    				setExpSHFile.writeToFile("export F1_values_b=("+ values1+")");
 					    				expSettingsSHFile.writeToFile("\n");
+					    				setExpSHFile.writeToFile("export size=${#F1_values_b[@]}");
+					    				expSettingsSHFile.writeToFile("\n");
 					    				setExpSHFile.writeToFile("for i in ${!F1_values_b[*]};do export F1_values_b_$i='${F1_values_b[$i]}';done");
 				    					
 				    				
@@ -2539,7 +2058,6 @@ public class MultiGUI extends JFrame{
 			    				setExpSHFile.writeToFile("# No parameters selected");
 
 			    			}
-                                                */
 			    			
 
 			    			WriteOutputXMLFile outputXML = new WriteOutputXMLFile(SimulationSettings.WORKING_DIRECTORY);
@@ -2665,6 +2183,15 @@ public class MultiGUI extends JFrame{
 				String[] args = {"/bin/bash","launch.sh"};
 				
 				buttonRun.setEnabled(false);
+				
+			
+    				
+					
+    				SimulationSettings.saveAllAgentVariables = false;
+    				
+    				
+    				
+
 				
 
 				 Process process = new ProcessBuilder(args).start();

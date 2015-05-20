@@ -1,3 +1,13 @@
+/***   Simulation GUI v0.99
+   Copyright (C) 2014 Gregor Boehl, Sander van der Hoog, Herbert Dawid, Simon Gemkow, Philipp Harting
+
+   This program is free software: you can redistribute it and/or modify
+   it under the terms of the Open Database License (ODbL 1.0) as published by
+   the Open Data Commons, see <http://opendatacommons.org/licenses/odbl/>.
+   This program is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+*/
 
 	import java.awt.BorderLayout;
 import java.awt.Color;
@@ -1674,140 +1684,7 @@ public class TabSingleTimeSeries extends JPanel {
 						
 
 				
-					
-						if( listOfVariableInstances.get(j).isSelectedForCrossCorrelation ){
-							
-							for(int k=0; k <PlottingSettings.listOfCrossCorrelation.size(); k++){
-								
-								boolean found = false;
-								
-								if(PlottingSettings.listOfCrossCorrelation.get(k).firstComponent.isVariableInstance){
-									
-									if(PlottingSettings.listOfCrossCorrelation.get(k).firstComponent.variableInstance.isVariable){
-										
-										
-										if(PlottingSettings.listOfCrossCorrelation.get(k).firstComponent.variableInstance.variable.name.equals(variableName)){
-											
-											PlottingSettings.listOfCrossCorrelation.remove(k);
-											k--;
-											found = true;
-											
-										}
-								
-									}
-									
-									
-									
-									
-									
-								}else{
-									
-								
-										if(PlottingSettings.listOfCrossCorrelation.get(k).firstComponent.ratioInstance.numerator.variable.name.equals(variableName)|| PlottingSettings.listOfCrossCorrelation.get(k).firstComponent.ratioInstance.denominator.variable.name.equals(variableName)){
-											
-											PlottingSettings.listOfCrossCorrelation.remove(k);
-											k--;
-											found = true;
-											
-										}
-								
-									
-									
-									
-									
-								}
-								
-								
-								if(!found){
-									
-									if(PlottingSettings.listOfCrossCorrelation.get(k).secondComponent.isVariableInstance){
-										
-										if(PlottingSettings.listOfCrossCorrelation.get(k).secondComponent.variableInstance.isVariable){
-											
-											
-											if(PlottingSettings.listOfCrossCorrelation.get(k).secondComponent.variableInstance.variable.name.equals(variableName)){
-												
-												PlottingSettings.listOfCrossCorrelation.remove(k);
-												k--;
-												found = true;
-												
-											}
-									
-										}
-										
-										
-										
-										
-										
-									}else{
-										
-									
-											if(PlottingSettings.listOfCrossCorrelation.get(k).secondComponent.ratioInstance.numerator.variable.name.equals(variableName)|| PlottingSettings.listOfCrossCorrelation.get(k).firstComponent.ratioInstance.denominator.variable.name.equals(variableName)){
-												
-												PlottingSettings.listOfCrossCorrelation.remove(k);
-												k--;
-												found = true;
-												
-											}
-								
-									}
-									
-									
-								}
-								
-								
-							}
-								
-								
-							
-							
-						}
-							
-							
-						if( listOfVariableInstances.get(j).isSelectedForMultipleBandpassFilteredTimeSeries){
-							
-							for(int k=0; k <PlottingSettings.listOfMultipleBandpassFilteredTimeSeries.size(); k++){
-								
-								for(int l=0; l < PlottingSettings.listOfMultipleBandpassFilteredTimeSeries.get(k).variableInstancesUsedForMultioleTimeSeries.size();l++){
-									
-									if(PlottingSettings.listOfMultipleBandpassFilteredTimeSeries.get(k).variableInstancesUsedForMultioleTimeSeries.get(l).isVariable){
-									
-										if(PlottingSettings.listOfMultipleBandpassFilteredTimeSeries.get(k).variableInstancesUsedForMultioleTimeSeries.get(l).variable.name.equals(variableName)){
-										
-											PlottingSettings.listOfMultipleBandpassFilteredTimeSeries.get(k).variableInstancesUsedForMultioleTimeSeries.remove(l);
-											l--;
-										}
-										}
-										
-								}
-								
-								for(int l=0; l < PlottingSettings.listOfMultipleBandpassFilteredTimeSeries.get(k).ratiosUsedForMultioleTimeSeries.size();l++){
-									
-									if(variableName.equals(PlottingSettings.listOfMultipleBandpassFilteredTimeSeries.get(k).ratiosUsedForMultioleTimeSeries.get(l).denominator.variable.name) || variableName.equals(PlottingSettings.listOfMultipleBandpassFilteredTimeSeries.get(k).ratiosUsedForMultioleTimeSeries.get(l).numerator.variable.name)){
-										
-										PlottingSettings.listOfMultipleBandpassFilteredTimeSeries.get(k).ratiosUsedForMultioleTimeSeries.remove(l);
-										l--;
-									
-								}
-									
-									
-								}
-								
-								
-							
-								
-								if(PlottingSettings.listOfMultipleBandpassFilteredTimeSeries.get(k).variableInstancesUsedForMultioleTimeSeries.size()==0 &&  PlottingSettings.listOfMultipleBandpassFilteredTimeSeries.get(k).ratiosUsedForMultioleTimeSeries.size()==0){
-									
-									PlottingSettings.listOfMultipleBandpassFilteredTimeSeries.remove(k);
-									
-								}
-								
-								
-							}
-							
-							
-						}
-							
+	
 						if( listOfVariableInstances.get(j).isSelectedForMultipleTimeSeries ){
 							
 						
@@ -1854,129 +1731,9 @@ public class TabSingleTimeSeries extends JPanel {
 							
 								
 						}	
-						if( listOfVariableInstances.get(j).isSelectedForScatterplots){
-							
-							for(int k=0; k <PlottingSettings.listOfScatterPlots.size(); k++){
-								
-								boolean found = false;
-								
-								if(PlottingSettings.listOfScatterPlots.get(k).firstComponent.isVariableInstance){
-									
-									if(PlottingSettings.listOfScatterPlots.get(k).firstComponent.variableInstance.isVariable){
-										
-										
-										if(PlottingSettings.listOfScatterPlots.get(k).firstComponent.variableInstance.variable.name.equals(variableName)){
-											
-											PlottingSettings.listOfScatterPlots.remove(k);
-											k--;
-											found = true;
-											
-										}
-								
-									}
-									
-									
-									
-									
-									
-								}else{
-									
-								
-										if(PlottingSettings.listOfScatterPlots.get(k).firstComponent.ratioInstance.numerator.variable.name.equals(variableName)|| PlottingSettings.listOfCrossCorrelation.get(k).firstComponent.ratioInstance.denominator.variable.name.equals(variableName)){
-											
-											PlottingSettings.listOfScatterPlots.remove(k);
-											k--;
-											found = true;
-											
-										}
-								
-									
-									
-									
-									
-								}
-								
-								
-								if(!found){
-									
-									if(PlottingSettings.listOfScatterPlots.get(k).secondComponent.isVariableInstance){
-										
-										if(PlottingSettings.listOfScatterPlots.get(k).secondComponent.variableInstance.isVariable){
-											
-											
-											if(PlottingSettings.listOfScatterPlots.get(k).secondComponent.variableInstance.variable.name.equals(variableName)){
-												
-												PlottingSettings.listOfScatterPlots.remove(k);
-												k--;
-												found = true;
-												
-											}
-									
-										}
-										
-										
-										
-										
-										
-									}else{
-										
-									
-											if(PlottingSettings.listOfScatterPlots.get(k).secondComponent.ratioInstance.numerator.variable.name.equals(variableName)|| PlottingSettings.listOfCrossCorrelation.get(k).firstComponent.ratioInstance.denominator.variable.name.equals(variableName)){
-												
-												PlottingSettings.listOfScatterPlots.remove(k);
-												k--;
-												found = true;
-												
-											}
-								
-									}
-									
-									
-								}
-								
-								
-							}
-							
-							
-							
-							
-						}
-									
-									
-						if(  listOfVariableInstances.get(j).selectedForSingleBandpassFilteredTimeSeries  )
-						{
-							
-							for(int k=0; k <PlottingSettings.listOfSingleBandpassFilteredTimeSeries.size(); k++){
-								
-								
-								if(PlottingSettings.listOfSingleBandpassFilteredTimeSeries.get(k).isVariableInstance){
-									
-									if(variableName.equals(PlottingSettings.listOfSingleBandpassFilteredTimeSeries.get(k).variableInstance.variable.name)){
-										
-										PlottingSettings.listOfSingleBandpassFilteredTimeSeries.remove(k);
-										k--;
-										
-									}
+		
 									
 						
-						
-								}else{
-									
-										if(variableName.equals(PlottingSettings.listOfSingleBandpassFilteredTimeSeries.get(k).ratioInstance.denominator.variable.name) || variableName.equals(PlottingSettings.listOfSingleBandpassFilteredTimeSeries.get(k).ratioInstance.numerator.variable.name)){
-										
-											PlottingSettings.listOfSingleBandpassFilteredTimeSeries.remove(k);
-										k--;
-										
-									}
-									
-									
-								}
-								
-								
-								
-							}
-							
-						}
 						if( listOfVariableInstances.get(j).selectedForSingleTimeSeries){
 							
 							for(int k=0; k <PlottingSettings.listOfSingleTimeSeries.size(); k++){

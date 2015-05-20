@@ -1,3 +1,15 @@
+/***   Simulation GUI v0.99
+   Copyright (C) 2014 Gregor Boehl, Sander van der Hoog, Herbert Dawid, Simon Gemkow, Philipp Harting
+
+   This program is free software: you can redistribute it and/or modify
+   it under the terms of the Open Database License (ODbL 1.0) as published by
+   the Open Data Commons, see <http://opendatacommons.org/licenses/odbl/>.
+   This program is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+*/
+
+
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
@@ -548,15 +560,7 @@ public class EditFilters extends JDialog{
 		
 		}
 		
-		for(int i=0; i < PlottingSettings.listOfCorrelation.size();i++){
-			
-			if(PlottingSettings.listOfCorrelation.get(i).Filter1.equals(filterName))
-				return true;
-			
-			if(PlottingSettings.listOfCorrelation.get(i).Filter2.equals(filterName))
-				return true;
 		
-		}
 		
 		
 	for(int i=0; i < PlottingSettings.listOfHeatmaps.size();i++){
@@ -570,15 +574,7 @@ public class EditFilters extends JDialog{
 		}
 	
 	
-	for(int i=0; i < PlottingSettings.listOfHeatmaps2V.size();i++){
-		
-		if(PlottingSettings.listOfHeatmaps2V.get(i).Filter1.equals(filterName))
-			return true;
-		
-		if(PlottingSettings.listOfHeatmaps2V.get(i).Filter2.equals(filterName))
-			return true;
 	
-	}
 	
 	
 	for(int i=0; i < PlottingSettings.listOfHistograms.size();i++){
@@ -625,15 +621,7 @@ for(int i=0; i < PlottingSettings.listOfAgentsVariableInstances.size();i++){
 		
 		}
 		
-		for(int i=0; i < PlottingSettings.listOfCorrelation.size();i++){
-			
-			if(PlottingSettings.listOfCorrelation.get(i).Filter1.equals(filterName))
-				PlottingSettings.listOfCorrelation.get(i).Filter1 = "No Filter";
-			
-			if(PlottingSettings.listOfCorrelation.get(i).Filter2.equals(filterName))
-				PlottingSettings.listOfCorrelation.get(i).Filter2 = "No Filter";
 		
-		}
 		
 		
 	for(int i=0; i < PlottingSettings.listOfHeatmaps.size();i++){
@@ -647,15 +635,7 @@ for(int i=0; i < PlottingSettings.listOfAgentsVariableInstances.size();i++){
 		}
 	
 	
-	for(int i=0; i < PlottingSettings.listOfHeatmaps2V.size();i++){
-		
-		if(PlottingSettings.listOfHeatmaps2V.get(i).Filter1.equals(filterName))
-			PlottingSettings.listOfHeatmaps2V.get(i).Filter1 = "No Filter";
-		
-		if(PlottingSettings.listOfHeatmaps2V.get(i).Filter2.equals(filterName))
-			PlottingSettings.listOfHeatmaps2V.get(i).Filter2 = "No Filter";
 	
-	}
 	
 	
 	for(int i=0; i < PlottingSettings.listOfHistograms.size();i++){

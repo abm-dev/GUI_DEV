@@ -3,3 +3,6 @@ total_mean_wage	total_mean_wage	Firm	mean	No	No	=	No	No	=	No	1
 production_costs	production_costs	Firm	mean	No	No	=	No	No	=	No	1	
 revenue_per_day	revenue_per_day	Firm	mean	No	No	=	No	No	=	No	1	
 revenue_per_day	revenue_per_day_1	Firm	median	No	No	=	No	No	=	No	1	
+payment_account_balance_sheet	temp_payment_account_balance_sheet	Firm	mean	No	No	=	No	No	=	No	1	
+equity	temp_equity	Firm	mean	No	No	=	No	No	=	No	1	
+equity_balance_sheet	temp_equity_balance_sheet	Firm	mean	No	No	=	No	No	=	No	1	

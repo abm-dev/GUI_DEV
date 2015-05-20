@@ -41,8 +41,8 @@ public class WorkspaceLauncher extends JDialog{
          * which gui to run : old or new one. 
          */ 
         void openMainGui(){
-            new SimulationSettingsFrame();
-//           new MultiGUI();
+            new EditableGui();
+//          new MultiGUI();
             
         }
         
@@ -122,7 +122,7 @@ public class WorkspaceLauncher extends JDialog{
 			    			setVisible(false);
 							dispose(); 
                                                         openMainGui();
-//                                                        new SimulationSettingsFrame();
+//                                                        new EditableGui();
 //							MultiGUI();
 		    			}
 					
@@ -158,7 +158,7 @@ public class WorkspaceLauncher extends JDialog{
 								 setVisible(false);
 								dispose();
                                                                 openMainGui();
-//                                                                new SimulationSettingsFrame();
+//                                                                new EditableGui();
 //								new MultiGUI();
 								  
 							  }

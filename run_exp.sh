@@ -19,7 +19,7 @@ export BASE='D:\projects\abm\GUI_DEV'
 
 
 #0.xml file
-export ZERO_XML_FILE='D:\projects\abm\GUI_DEV\EuraceUnibi_Model_1.0\its\0_after_2k_transient.xml'
+export ZERO_XML_FILE='0.xml'
 #Export the database folder for R scripts
 export DATABASE_LOCATION='D:\projects\abm\GUI_DEV'
 
@@ -33,11 +33,17 @@ export NR_NODES=1
 
 
 #Set number of job processes to use (nr of job lists: job_list_$n.sh)
-export NUM_PROCS=6
+export NUM_PROCS=1
 
 
 #Set the number of parameters to vary
 export NUM_PARS=0
+
+
+./ -f D:\projects\abm\GUI_DEV\EuraceUnibi_Model_1.0\eurace_model.xml
+cd D:\projects\abm\GUI_DEV\EuraceUnibi_Model_1.0
+make
+cd "$BASE"
 
 
 #Set number of batch runs
@@ -47,7 +53,7 @@ echo 'Batch runs:[' $RUNS ']'
 
 
 #Executables
-export MAIN_S='D:\projects\abm\GUI_DEV\EuraceUnibi_Model_1.0\main'
+export MAIN_S='.'
 
 
 #Location of the model XML (used to generate the SQL)
@@ -56,7 +62,7 @@ export MODEL_XML_FILE='D:\projects\abm\GUI_DEV\EuraceUnibi_Model_1.0\eurace_mode
 
 #Location of R scripts
 #Parallel
-export PATH_R_SCRIPTS='D:\projects\abm\GUI_DEV\Data_Analysis_GUI_Serial/'
+export PATH_R_SCRIPTS='./Data_Analysis_GUI_Serial/'
 
 
 #Running simulations

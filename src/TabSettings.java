@@ -1,3 +1,15 @@
+/***   Simulation GUI v0.99
+   Copyright (C) 2014 Gregor Boehl, Sander van der Hoog, Herbert Dawid, Simon Gemkow, Philipp Harting
+
+   This program is free software: you can redistribute it and/or modify
+   it under the terms of the Open Database License (ODbL 1.0) as published by
+   the Open Data Commons, see <http://opendatacommons.org/licenses/odbl/>.
+   This program is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+*/
+
+
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
@@ -33,16 +45,7 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableColumn;
 
-/**
- * apparently additional class that describes different parts of first page of GUI.
- * contains radoibuttons, buttonGroups, tables, etc.
- * 
- * Cannot really understand, why an instance of this class is used with the name "settingContainer" in the multi gui.
- * Is it at the same time containing settings and being used as some gui property?
- * 
- * Apparently tab settings is a class that is drawing all the subpanels in the first page of the multi gui.
- * 
- */
+
 public class TabSettings extends JPanel{
 	
 	
@@ -57,7 +60,7 @@ public class TabSettings extends JPanel{
 	JTextField fieldNumBatchRuns, fieldNumIterations;
 	JRadioButton doRun, doNotRun, justBatchRuns, parameterVariationOnePars, doCompressKeepOriginal, doCompressRemoveOriginal, doNotCompress,removeOriginal, decompress,rbYesStoreAll, rbNoStoreAll;
 	JButton changeInitialParameterSetup, buttonActivateParameter1;
-	JComboBox cbNumProcessors;
+	public static JComboBox cbNumProcessors;
 	ButtonGroup Compress, Run, expSetup, soreAllvariables;
 	JTable table,tableP2;
 	private JScrollPane listScroll;
@@ -312,20 +315,9 @@ public class TabSettings extends JPanel{
 	    			   
 	    			    }
 	    			    
-	    			    for(int i=0; i<PlottingSettings.listOfMultipleBandpassFilteredTimeSeries.size();i++){
-	    		    		
-    			    		
-    			    		PlottingSettings.listOfMultipleBandpassFilteredTimeSeries.get(i).tmax = (int) Math.floor(SimulationSettings.numIterations);
-    			   
-    			    }
 	    			    
 	    			    
-	    			    for(int i=0; i<PlottingSettings.listOfSingleBandpassFilteredTimeSeries.size();i++){
-	    		    		
-    			    		
-    			    		PlottingSettings.listOfSingleBandpassFilteredTimeSeries.get(i).tmax = (int) Math.floor(SimulationSettings.numIterations);
-    			   
-    			    }
+	    			   
 	    			    
 	    			    
 	    			    for(int i=0; i<PlottingSettings.listOfHeatmaps.size();i++){
@@ -335,12 +327,7 @@ public class TabSettings extends JPanel{
     			   
 	    			    }
 	    			    
-	    			    for(int i=0; i<PlottingSettings.listOfHeatmaps2V.size();i++){
-	    		    		
-    			    		
-    			    		PlottingSettings.listOfHeatmaps2V.get(i).tmax = (int) Math.floor(SimulationSettings.numIterations);
-    			   
-	    			    }
+	    			  
 	    			    
 	    			    
 	    	
@@ -396,11 +383,10 @@ public class TabSettings extends JPanel{
 	    			    	}
 	    			    
 	    			    PlottingSettings.defaultsHeatmaps.tmax = (int) Math.floor(SimulationSettings.numIterations);
-	    			    PlottingSettings.defaultsHeatmaps2V.tmax = (int) Math.floor(SimulationSettings.numIterations);
+	    			  
 	    			    PlottingSettings.defaultsSingleTimeSeries.tmax = (int) Math.floor(SimulationSettings.numIterations);
 	    			    PlottingSettings.defaultsMultipleTimeSeries.tmax = (int) Math.floor(SimulationSettings.numIterations);
-	    			    PlottingSettings.defaultsMultipleBandpassFilteredTimeSeries.tmax = (int) Math.floor(SimulationSettings.numIterations);
-	    			    PlottingSettings.defaultsSingleBandpassFilteredTimeSeries.tmax = (int) Math.floor(SimulationSettings.numIterations);	
+	    			    
 	    			    
 	    			    
 	    			}
@@ -421,7 +407,7 @@ public class TabSettings extends JPanel{
 	      
 	      c.gridx = 1;
 	      c.gridy= 3;
-	      cbNumProcessors.setSelectedIndex(5);
+	      cbNumProcessors.setSelectedIndex(0);
 	      add(new JScrollPane(cbNumProcessors),c);
 	       
 	      cbNumProcessors.addItemListener(new itemHandlerNumProcs());
@@ -895,11 +881,7 @@ void drawParameterTables(){
 		
 		if(enable){
 			
-			for(int i=0; i< lcLeftPanel.getComponentCount();i++){
-				
-				lcLeftPanel.getComponent(i).setEnabled(true);
-				
-			}
+			
 			
 			
 			
@@ -914,11 +896,6 @@ void drawParameterTables(){
 			
 		}else{
 			
-			for(int i=0; i< lcLeftPanel.getComponentCount();i++){
-				
-				lcLeftPanel.getComponent(i).setEnabled(false);
-				
-			}
 			
 			
 			
@@ -1256,6 +1233,7 @@ private class itemHandlerSaveAllvars implements ItemListener {
 		if(rbYesStoreAll.isSelected()){
 			
 			SimulationSettings.saveAllAgentVariables = true;
+			SimulationSettings.execXParser = true;
 			
 		}else{
 			

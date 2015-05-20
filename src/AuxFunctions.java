@@ -1,3 +1,15 @@
+/***   Simulation GUI v0.99
+   Copyright (C) 2014 Gregor Boehl, Sander van der Hoog, Herbert Dawid, Simon Gemkow, Philipp Harting
+
+   This program is free software: you can redistribute it and/or modify
+   it under the terms of the Open Database License (ODbL 1.0) as published by
+   the Open Data Commons, see <http://opendatacommons.org/licenses/odbl/>.
+   This program is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+*/
+
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -138,86 +150,7 @@ public class AuxFunctions {
 	
 	
 	
-	public static PlottingSettings.SingleBandpassFilteredTimeSeries DeepCopySingleBandpassFilteredTimeSeriesList (PlottingSettings.SingleBandpassFilteredTimeSeries tsListOrig)
-	{
-		
-		PlottingSettings.SingleBandpassFilteredTimeSeries timeSeriesListClone;
-		
-		if(tsListOrig.isVariableInstance)
-			timeSeriesListClone = (new PlottingSettings()).new SingleBandpassFilteredTimeSeries(tsListOrig.variableInstance.clone());
-		else
-			timeSeriesListClone = (new PlottingSettings()).new SingleBandpassFilteredTimeSeries(tsListOrig.ratioInstance.clone());
-		
-		timeSeriesListClone.tmin = tsListOrig.tmin;
-		timeSeriesListClone.tmax = tsListOrig.tmax;
-		
-		
-		timeSeriesListClone.lowerBoundEnabled = tsListOrig.lowerBoundEnabled;
-		timeSeriesListClone.upperBoundEnabled = tsListOrig.upperBoundEnabled;
-		timeSeriesListClone.lowerBound = tsListOrig.lowerBound;
-		timeSeriesListClone.upperBound = tsListOrig.upperBound;
-		
-		timeSeriesListClone.correlation = tsListOrig.correlation;
-		timeSeriesListClone.logarithmic = tsListOrig.logarithmic;
-		timeSeriesListClone.aggregation = tsListOrig.aggregation;
-		
-		timeSeriesListClone.low = tsListOrig.low;
-		timeSeriesListClone.high = tsListOrig.high;
-		timeSeriesListClone.Nfix = tsListOrig.Nfix;
-		
-		timeSeriesListClone.drift = tsListOrig.drift;
-		
-		
-		
-		
-			
-		return timeSeriesListClone;
-		
-	}
 	
-	
-	public static PlottingSettings.MultipleBandpassFilteredTimeSeries DeepCopyMultipleBandpassFilteredTimeSeriesList (PlottingSettings.MultipleBandpassFilteredTimeSeries tsListOrig)
-	{
-		
-		PlottingSettings.MultipleBandpassFilteredTimeSeries timeSeriesListClone =  (new PlottingSettings()).new MultipleBandpassFilteredTimeSeries(tsListOrig.timeSeriesName);
-	
-		for(int i=0; i< tsListOrig.variableInstancesUsedForMultioleTimeSeries.size();i++){
-			
-			timeSeriesListClone.variableInstancesUsedForMultioleTimeSeries.add(tsListOrig.variableInstancesUsedForMultioleTimeSeries.get(i).clone());
-		
-		}
-		
-		for(int i=0; i< tsListOrig.ratiosUsedForMultioleTimeSeries.size();i++){
-			
-			timeSeriesListClone.ratiosUsedForMultioleTimeSeries.add(tsListOrig.ratiosUsedForMultioleTimeSeries.get(i).clone());
-		
-		}
-		
-		timeSeriesListClone.tmax = tsListOrig.tmax;
-		timeSeriesListClone.tmin = tsListOrig.tmin;
-		
-		
-
-		timeSeriesListClone.timeSeriesName= tsListOrig.timeSeriesName;
-		
-		timeSeriesListClone.lowerBound= tsListOrig.lowerBound;
-		timeSeriesListClone.upperBound= tsListOrig.upperBound;
-		timeSeriesListClone.lowerBoundEnabled= tsListOrig.lowerBoundEnabled;
-		timeSeriesListClone.upperBoundEnabled= tsListOrig.upperBoundEnabled;
-		
-
-		timeSeriesListClone.correlation= tsListOrig.correlation;
-		timeSeriesListClone.logarithmic= tsListOrig.logarithmic;
-		timeSeriesListClone.aggregation= tsListOrig.aggregation;
-		timeSeriesListClone.low= tsListOrig.low;
-		timeSeriesListClone.high= tsListOrig.high;
-		timeSeriesListClone.Nfix= tsListOrig.Nfix;
-		timeSeriesListClone.drift= tsListOrig.drift;
-
-		
-		return timeSeriesListClone;
-		
-	}
 	
 	
 	

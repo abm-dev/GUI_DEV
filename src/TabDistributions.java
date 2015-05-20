@@ -1,3 +1,15 @@
+/***   Simulation GUI v0.99
+   Copyright (C) 2014 Gregor Boehl, Sander van der Hoog, Herbert Dawid, Simon Gemkow, Philipp Harting
+
+   This program is free software: you can redistribute it and/or modify
+   it under the terms of the Open Database License (ODbL 1.0) as published by
+   the Open Data Commons, see <http://opendatacommons.org/licenses/odbl/>.
+   This program is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+*/
+
+
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
@@ -543,7 +555,7 @@ public class TabDistributions extends JPanel {
 		    									if(AgentSettings.agents .get(j).variableList.get(k).name.equals(dlm2Parameter.get(i).toString())){
 		    										
 		    										AgentSettings.agents .get(j).variableList.get(k).isSelectedForHistograms = true;
-		    										PlottingSettings.listOfHistograms.add((new PlottingSettings()).new Histogram(AgentSettings.agents .get(j).variableList.get(k).name,AgentSettings.agents .get(j).variableList.get(k),AgentSettings.agents .get(j).agentName,PlottingSettings.defaultsHistogram.Filter1,PlottingSettings.defaultsHistogram.Filter2 ));
+		    										PlottingSettings.listOfHistograms.add((new PlottingSettings()).new Histogram("dist_"+AgentSettings.agents .get(j).variableList.get(k).name,AgentSettings.agents .get(j).variableList.get(k),AgentSettings.agents .get(j).agentName,PlottingSettings.defaultsHistogram.Filter1,PlottingSettings.defaultsHistogram.Filter2 ));
 		    										
 		    										break;
 		    									}
@@ -648,7 +660,7 @@ public class TabDistributions extends JPanel {
 	    									if(AgentSettings.agents .get(j).variableList.get(k).name.equals(dlm2Parameter.get(i).toString())){
 	    										
 	    										AgentSettings.agents .get(j).variableList.get(k).isSelectedForHistograms = true;
-	    										PlottingSettings.listOfHistograms.add((new PlottingSettings()).new Histogram(AgentSettings.agents .get(j).variableList.get(k).name,AgentSettings.agents .get(j).variableList.get(k),AgentSettings.agents .get(j).agentName,PlottingSettings.defaultsHistogram.Filter1,PlottingSettings.defaultsHistogram.Filter2  ));
+	    										PlottingSettings.listOfHistograms.add((new PlottingSettings()).new Histogram("dist_"+AgentSettings.agents .get(j).variableList.get(k).name,AgentSettings.agents .get(j).variableList.get(k),AgentSettings.agents .get(j).agentName,PlottingSettings.defaultsHistogram.Filter1,PlottingSettings.defaultsHistogram.Filter2  ));
 	    										
 	    										break;
 	    									}
@@ -1153,7 +1165,7 @@ public class TabDistributions extends JPanel {
 						
 					}
 							
-					 name = name+"_"+counter;
+					 name = "dist_"+name+"_"+counter;
 					 
 					 
 					 for(int i=0; i < PlottingSettings.listOfHistograms.size();i++){
@@ -1163,7 +1175,7 @@ public class TabDistributions extends JPanel {
 		   		        				
 		   		        			
 		   		        				PlottingSettings.Histogram hist = PlottingSettings.listOfHistograms.get(i).clone();
-		   		        				
+		   		        				hist.name = name;
 		   		        				hist.Filter1 = PlottingSettings.defaultsHistogram.Filter1;
 		   		        				hist.Filter2 = PlottingSettings.defaultsHistogram.Filter2;
 		   		       
