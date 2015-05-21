@@ -1,1 +1,4 @@
 Variable 	 PV 	 Number 	 lowLim 	 upperLimit 	 tmin 	 tmax 	 Plot_Name_and_Y_axis
+production_costs	1	2	No	No	1	5000	mts_production_costs_revenue_per_day
+revenue_per_day	0	0	No	No	1	5000	mts_production_costs_revenue_per_day
+

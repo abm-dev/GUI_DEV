@@ -19,7 +19,7 @@ export BASE='D:\projects\abm\GUI_DEV'
 
 
 #0.xml file
-export ZERO_XML_FILE='0.xml'
+export ZERO_XML_FILE='D:\projects\abm\GUI_DEV\EuraceUnibi_Model_1.0\its\0_after_2k_transient.xml'
 #Export the database folder for R scripts
 export DATABASE_LOCATION='D:\projects\abm\GUI_DEV'
 
@@ -38,12 +38,6 @@ export NUM_PROCS=1
 
 #Set the number of parameters to vary
 export NUM_PARS=0
-
-
-./ -f D:\projects\abm\GUI_DEV\EuraceUnibi_Model_1.0\eurace_model.xml
-cd D:\projects\abm\GUI_DEV\EuraceUnibi_Model_1.0
-make
-cd "$BASE"
 
 
 #Set number of batch runs

@@ -5,9 +5,9 @@ library("fields")
 ########################################Input-Section: Path Locations ###############################################################
 save_snapshots<-0
 # Experiment name = name of Parameter
-experiment_name<-"Batch"
+experiment_name<-"gov_policy_switch_human_capital_improvement"
 # Path to the root directory of the databases.
-database_location<-paste("D:\projects\abm\GUI_DEV/its/Batch/",sep="")
+database_location<-paste("D:\projects\abm\GUI_DEV/its/gov_policy_switch_human_capital_improvement/",sep="")
 # Path to the root directory plots.
 plot_directory<-"D:\projects\abm\GUI_DEV/Plots/"
 dir.create(plot_directory, showWarnings = FALSE, mode = "0777")
@@ -31,7 +31,7 @@ colored_lines<-0
 # Number of runs per parameter value.
 runs<-10
 # Values of parameter.
-parameter_values<-c("")
+parameter_values<-c("0", "1")
 print("Parameter values: ")
 print(parameter_values)
 
@@ -60,6 +60,15 @@ print(paste("Number xml files: ", number_xml))
 
 
 # Number of Agent types.
+Firm = 80
+Household = 1600
+Mall = 1
+IGFirm = 1
+Eurostat = 1
+Bank = 20
+Government = 1
+CentralBank = 1
+ClearingHouse = 1
 ########################################Input-Section: Settings for Analysis #########################################################
 # Create time series graphs? 1 = Yes or 0 = No
 time_series<-1
@@ -88,7 +97,7 @@ scatter<-0
 # Calculate correlation? 1 = Yes or 0 = No
 correlation = 0
 # Plot multiple time series.
-multiple_time_series<-0
+multiple_time_series<-1
 # Create bandpass filtered plots. 1 = Yes or 0 = No
 bandpass_filter<-0
 # Create 0,25,50,75,100 quantiles time series  1 = Yes or 0 = No

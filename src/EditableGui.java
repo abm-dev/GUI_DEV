@@ -1015,9 +1015,9 @@ public class EditableGui extends javax.swing.JFrame {
     JScrollPane settingScrollPane, plottingScrollPane;
 
     void addOldSubTabsInNewTabPlottingPage() {
-        TabSingleTimeSeries tabSingleTimeSeries;
+        final TabSingleTimeSeries tabSingleTimeSeries;
         TabMultipleTimeSeries tabMultipleTimeSeries;
-        TabDistributions tabDistributions;
+        final TabDistributions tabDistributions;
         JScrollPane plottingScrollPane, plottingScrollPane2, plottingScrollPane3;
 
         tabSingleTimeSeries = new TabSingleTimeSeries();
@@ -1075,16 +1075,12 @@ public class EditableGui extends javax.swing.JFrame {
         addLegendCheckboxNew.setSelected(PlottingSettings.addLegend);
         coloredPlotsCheckboxNew.setSelected(PlottingSettings.coloured);
 
-        switch (PlottingSettings.fileTypePlots) {
-            case "pdf":
+        if (PlottingSettings.fileTypePlots.equals("pdf")) {
                 fileTypePlotsComboBox.setSelectedIndex(0);
-                break;
-            case "eps":
+        }else if (PlottingSettings.fileTypePlots.equals("eps")){
                 fileTypePlotsComboBox.setSelectedIndex(1);
-                break;
-            default:
-                fileTypePlotsComboBox.setSelectedIndex(2);
-        }
+        }else fileTypePlotsComboBox.setSelectedIndex(2);
+
 
     }
 
@@ -1133,10 +1129,10 @@ public class EditableGui extends javax.swing.JFrame {
         JMenuItem loadExperiment, newExperiment, saveExperiment, saveExperimentAs, exitGUI;
         JMenuItem runBatchExperiments;
         JMenu menuSettings, setPathes;
-        JMenuItem setPathModelXML, setExecutable, setZeroXMLFile, setPathRScripts, setPathXparser;
+        final JMenuItem setPathModelXML, setExecutable, setZeroXMLFile, setPathRScripts, setPathXparser;
         JMenu menuImportExport, menuimportPlottingSections, menuimportParameterSections;
         JMenuItem importPlottingSettings, exportPlottingSettings, importParameterSettings, exportParameterSettings;
-        JTabbedPane mainTabPane = null;
+        final JTabbedPane mainTabPane = null;
 
         menuBar.add(menu1);
 
@@ -2060,7 +2056,7 @@ public class EditableGui extends javax.swing.JFrame {
         String PathToFile = new String("launch.sh");
 
         System.out.println("before updating init");
-        HashMap<String, String> dict = new HashMap<>();
+        HashMap<String, String> dict = new HashMap<String, String>();
 
 //                                                String slash="\\";                                                
         dict.put("<SimulationSettings.WORKING_DIRECTORY>",
@@ -2554,8 +2550,8 @@ public class EditableGui extends javax.swing.JFrame {
 
     void paneSettingMiddleAreaRadioButtonUpdated() {
         ArrayList<SimulationSettings.Value> emptyArrayList = new ArrayList<SimulationSettings.Value>();
-        ParameterTableModel tabModel;
-        TableColumn col;
+        final ParameterTableModel tabModel;
+        final TableColumn col;
 
         if (runOnlyOneBatchRadioButton.isSelected()) {
 
@@ -2753,9 +2749,9 @@ public class EditableGui extends javax.swing.JFrame {
     }
 
     void wrapDrawStoreOptionTable(JTable myTable, AgentTableModel tableMod, String[] colHeaders) {
-        AgentTableModel tableModel = tableMod;
+        final AgentTableModel tableModel = tableMod;
         myTable.setModel(tableModel);
-        TableColumn col_2, col_3, col_4;
+        final TableColumn col_2, col_3, col_4;
 
         try {
 
