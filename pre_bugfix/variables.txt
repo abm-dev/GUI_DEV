@@ -1,0 +1,8 @@
+Variable	 VariableName	 Agent	 Method	 Filter1	 Value	 OP	 Filter2	 Value	 OP	 Weighting	 PV
+total_mean_wage	total_mean_wage	Firm	mean	No	No	=	No	No	=	No	1	
+production_costs	producosts	Firm	mean	No	No	=	No	No	=	No	1	
+revenue_per_day	revenue_per_day3332	Firm	mean	No	No	=	No	No	=	No	1	
+revenue_per_day	revenue_per_day_1	Firm	median	No	No	=	No	No	=	No	1	
+payment_account_balance_sheet	payment_account_balance_sheet	Firm	mean	No	No	=	No	No	=	No	1	
+equity	equity	Firm	mean	No	No	=	No	No	=	No	1	
+equity_balance_sheet	equity_balance_sheet	Firm	mean	No	No	=	No	No	=	No	1	

@@ -20,6 +20,14 @@ import javax.swing.JScrollBar;
 import javax.swing.JTextField;
 
 
+/**
+ * realization of the dialogue that asks to open an existing experiment, before 
+ * the main GUI is launched. 
+ * 
+ * 
+ * 
+ * 
+*/ 
 public class WorkspaceLauncher extends JDialog{
 	
 	JTextField textfieldPath;
@@ -28,6 +36,17 @@ public class WorkspaceLauncher extends JDialog{
 	
 	public static String workspacePath;
 	
+        /**
+         * this method was created to make it possible to decide in one place, 
+         * which gui to run : old or new one. 
+         */ 
+        void openMainGui(){
+            new EditableGui();
+//          new MultiGUI();
+            
+        }
+        
+        
 	WorkspaceLauncher(){
 		
 		 setTitle("GUI Launcher: Select Experiment as Workspace");
@@ -101,8 +120,10 @@ public class WorkspaceLauncher extends JDialog{
 		    			
 		    			if(chooseFile.approved){
 			    			setVisible(false);
-							dispose();
-							new MultiGUI();
+							dispose(); 
+                                                        openMainGui();
+//                                                        new EditableGui();
+//							MultiGUI();
 		    			}
 					
 				}
@@ -136,7 +157,9 @@ public class WorkspaceLauncher extends JDialog{
 							 
 								 setVisible(false);
 								dispose();
-								new MultiGUI();
+                                                                openMainGui();
+//                                                                new EditableGui();
+//								new MultiGUI();
 								  
 							  }
 					
